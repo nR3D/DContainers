@@ -4,8 +4,9 @@
 
 #include <vector>
 
-template<typename T, int D>
+template<typename T, std::size_t D>
 class InitMatrix : public std::vector<InitMatrix<T, D-1>> {
+    static_assert(D > 0);
     using std::vector<InitMatrix<T, D-1>>::vector;
 };
 

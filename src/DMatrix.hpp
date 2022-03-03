@@ -5,6 +5,7 @@
 #include <vector>
 #include <array>
 #include <iostream>
+#include "InitMatrix.hpp"
 
 template<std::size_t D, typename T>
 class DMatrix {
@@ -25,6 +26,13 @@ public:
             _container.push_back(DMatrix<D - 1, T>(next_allocs...));
     }
 
+    explicit DMatrix(InitMatrix<T,D> initMatrix) {
+        _container.reserve(initMatrix.size());
+        for (const InitMatrix<T, D-1> & subMatrix : initMatrix) {
+            _container.emplace_back(DMatrix<D-1,T>(subMatrix));
+        }
+    }
+
     template<std::integral Idx, std::integral... Indices>
     T& operator()(Idx index, Indices... indices) {
         return _container[index](indices...);
@@ -33,6 +41,28 @@ public:
     template<std::integral Idx, std::integral... Indices>
     T operator()(Idx index, Indices... indices) const {
         return _container[index](indices...);
+    }
+
+    DMatrix<D,T>& operator=(const InitMatrix<T,D>& from) {
+        _container.reserve(from.size());
+        auto _container_size = _container.size();
+        for(std::size_t i = 0; i < from.size(); ++i)
+            if(i < _container_size)
+                _container.at(i) = from.at(i);
+            else
+                _container.emplace_back(from.at(i));
+        return *this;
+    }
+
+    DMatrix<D,T>& operator=(InitMatrix<T,D>&& from) {
+        _container.reserve(from.size());
+        auto _container_size = _container.size();
+        for(std::size_t i = 0; i < from.size(); ++i)
+            if(i < _container_size)
+                _container.at(i) = std::move(from.at(i));
+            else
+                _container.emplace_back(std::move(from.at(i)));
+        return *this;
     }
 
     void set(std::array<std::size_t, D> indices, const T& value) {
@@ -97,12 +127,24 @@ public:
 
     explicit DMatrix(std::size_t alloc) : _container(alloc) {}
 
+    explicit DMatrix(const std::vector<T>& initVector) : _container(initVector) {}
+
     T& operator()(std::size_t index) {
         return _container[index];
     }
 
     T operator()(std::size_t index) const {
         return _container[index];
+    }
+
+    DMatrix<1,T>& operator=(const std::vector<T>& from) {
+        _container = from;
+        return *this;
+    }
+
+    DMatrix<1,T>& operator=(std::vector<T>&& from) {
+        _container = std::move(from);
+        return *this;
     }
 
     void set(std::array<std::size_t,1> index, const T& value) {
