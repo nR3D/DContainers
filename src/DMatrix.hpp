@@ -26,7 +26,7 @@ public:
             _container.push_back(DMatrix<D - 1, T>(next_allocs...));
     }
 
-    explicit DMatrix(InitMatrix<T,D> initMatrix) {
+    explicit DMatrix(const InitMatrix<T,D>& initMatrix) {
         _container.reserve(initMatrix.size());
         for (const InitMatrix<T, D-1> & subMatrix : initMatrix) {
             _container.emplace_back(DMatrix<D-1,T>(subMatrix));
@@ -34,14 +34,37 @@ public:
     }
 
     template<std::integral Idx, std::integral... Indices>
+    requires (sizeof...(Indices) == D-1)
     T& operator()(Idx index, Indices... indices) {
         return _container[index](indices...);
     }
 
     template<std::integral Idx, std::integral... Indices>
-    T operator()(Idx index, Indices... indices) const {
+    requires (sizeof...(Indices) == D-1)
+    const T& operator()(Idx index, Indices... indices) const {
         return _container[index](indices...);
     }
+
+    template<std::integral Idx, std::integral... Indices>
+    requires (sizeof...(Indices) < D-1) && (sizeof...(Indices) > 0)
+    DMatrix<D-sizeof...(Indices)-1, T>& operator()(Idx index, Indices... indices) {
+        return _container[index](indices...);
+    }
+
+    template<std::integral Idx, std::integral... Indices>
+    requires (sizeof...(Indices) < D-1) && (sizeof...(Indices) > 0)
+    const DMatrix<D-sizeof...(Indices)-1, T>& operator()(Idx index, Indices... indices) const {
+        return _container[index](indices...);
+    }
+
+    DMatrix<D-1, T>& operator()(std::size_t index) {
+        return _container[index];
+    }
+
+    const DMatrix<D-1, T>& operator()(std::size_t index) const {
+        return _container[index];
+    }
+
 
     DMatrix<D,T>& operator=(const InitMatrix<T,D>& from) {
         _container.reserve(from.size());
@@ -133,7 +156,7 @@ public:
         return _container[index];
     }
 
-    T operator()(std::size_t index) const {
+    const T& operator()(std::size_t index) const {
         return _container[index];
     }
 
