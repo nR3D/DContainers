@@ -5,7 +5,7 @@
 #include <vector>
 #include <array>
 #include <iostream>
-#include "InitMatrix.hpp"
+#include "LiteralDMatrix.hpp"
 
 template<std::size_t D, typename T>
 class DMatrix {
@@ -26,9 +26,9 @@ public:
             _container.push_back(DMatrix<D - 1, T>(next_allocs...));
     }
 
-    explicit DMatrix(const InitMatrix<T,D>& initMatrix) {
-        _container.reserve(initMatrix.size());
-        for (const InitMatrix<T, D-1> & subMatrix : initMatrix) {
+    explicit DMatrix(const LiteralMatrix<D,T>& literal) {
+        _container.reserve(literal.size());
+        for (const LiteralMatrix<D - 1, T> & subMatrix : literal) {
             _container.emplace_back(DMatrix<D-1,T>(subMatrix));
         }
     }
@@ -66,7 +66,7 @@ public:
     }
 
 
-    DMatrix<D,T>& operator=(const InitMatrix<T,D>& from) {
+    DMatrix<D,T>& operator=(const LiteralMatrix<D,T>& from) {
         _container.reserve(from.size());
         auto _container_size = _container.size();
         for(std::size_t i = 0; i < from.size(); ++i)
@@ -77,7 +77,7 @@ public:
         return *this;
     }
 
-    DMatrix<D,T>& operator=(InitMatrix<T,D>&& from) {
+    DMatrix<D,T>& operator=(LiteralMatrix<D,T>&& from) {
         _container.reserve(from.size());
         auto _container_size = _container.size();
         for(std::size_t i = 0; i < from.size(); ++i)
