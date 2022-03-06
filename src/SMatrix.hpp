@@ -3,6 +3,7 @@
 
 
 #include <array>
+#include <iostream>
 
 template<typename T, std::size_t N, std::size_t ...O>
 class SMatrix : public std::array<SMatrix<T, O...>, N> {

@@ -6,9 +6,6 @@
 #include <array>
 #include <iostream>
 
-
-#include <vector>
-
 template<std::size_t D, typename T>
 class DMatrix : public std::vector<DMatrix<D - 1, T>> {
 public:
