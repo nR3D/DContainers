@@ -96,6 +96,9 @@ public:
      * @param index Index of the higher (i.e. left-most) dimension
      * @param indices Parameter pack of the indices for the lower dimensions of the submatrix
      * @return Reference to the requested submatrix
+     * @warning Getting a reference to a submatrix, and then assigning a new submatrix to the parent matrix,
+     *          will result in a dangling reference, since the previous submatrix (to which the reference points)
+     *          will be deleted before assigning the new one
      */
     template<std::integral Idx, std::integral... Indices>
     requires (sizeof...(Indices) < D-1) && (sizeof...(Indices) > 0)
