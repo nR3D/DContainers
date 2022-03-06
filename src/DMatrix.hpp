@@ -62,8 +62,8 @@ public:
 
     std::size_t total() const {
         auto s = 0;
-        for(auto c : this->begin())
-            s += c->size();
+        for(auto it = this->begin(); it != this->end(); ++it)
+            s += it->size();
         return s;
     }
 
