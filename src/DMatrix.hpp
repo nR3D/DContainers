@@ -185,6 +185,11 @@ std::ostream &operator<<(std::ostream &os, const DMatrix<2,T> &matrix) {
     return os;
 }
 
+/***
+ * @brief Template specialization of DMatrix<T,D> with a single dimension, i.e. a vector
+ * @tparam T Type of the matrix
+ * @see DMatrix
+ */
 template<typename T>
 class DMatrix<1, T> : public std::vector<T> {
 public:
@@ -200,18 +205,34 @@ public:
     template<typename U>
     friend std::ostream &operator<<(std::ostream &, const DMatrix<1,U> &);
 
+    /***
+     * @brief Get reference of element at given position
+     * @param index Position of the element
+     * @return Reference to the requested element
+     */
     T& operator()(std::size_t index) {
         return this->at(index);
     }
 
+    /***
+     * @see DMatrix<1,T>::operator()(std::size_t index)
+     * @return Constant reference to the requested element
+     */
     const T& operator()(std::size_t index) const {
         return this->at(index);
     }
 
+    /***
+     * @return Number of elements held by the matrix
+     */
     std::size_t total() const {
         return this->size();
     }
 
+    /***
+     * @see DMatrix<D,T>::shape()
+     * @return Array containing the number of elements contained in the single dimension of the matrix
+     */
     std::array<std::size_t, 1> shape() const {
         return { this->size() };
     }
