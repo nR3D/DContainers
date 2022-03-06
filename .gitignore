@@ -2,3 +2,4 @@
 CMakeCache.txt
 cmake-build-debug/
 Makefile
+build/
