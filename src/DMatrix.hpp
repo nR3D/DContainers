@@ -36,11 +36,9 @@ public:
 
     /***
      * @brief Print function for n-dimentional matrices.
-     * Matrices with an higher dimension than 2 will print their dimension and current allocation
-     * for each dimension, while lower dimensions will resemble an handwritten matrix/vector
-     * @see std::ostream::operator<<(std::ostream &, const DMatrix<2,U> &)
-     * @see std::ostream::operator<<(std::ostream &, const DMatrix<1,U> &)
-     * Format example:
+     *        Matrices with an higher dimension than 2 will print their dimension and current allocation
+     *        for each dimension, while lower dimensions will resemble an handwritten matrix/vector.
+     *        Format example:
      * @code
      * DMatrix<3>[2,3,2]{
      * |0.5, 0.51|
@@ -52,13 +50,15 @@ public:
      * |5.5, 5.51|
      * }
      * @endcode
+     * @see std::ostream::operator<<(std::ostream &, const DMatrix<2,U> &)
+     * @see std::ostream::operator<<(std::ostream &, const DMatrix<1,U> &)
      */
     template<std::size_t M, typename U>
     friend std::ostream &operator<<(std::ostream &, const DMatrix<M,U> &);
 
     /***
      * @brief Print function for 2-dimentional matrices.
-     * Format example:
+     *        Format example:
      * @code
      * |42.0, 10.5|
      * |5.55, 11.2|
@@ -70,7 +70,6 @@ public:
 
     /***
      * @brief Get a reference to a specific element held by the matrix, specifying its position.
-     * @pre The number of parameters (index + ...indices) is equal to the dimension of the matrix
      * @param index Index of the higher (i.e. left-most) dimension
      * @param indices Parameter pack of the indices for the lower dimensions of the element
      * @return Reference to the requested element
@@ -200,7 +199,7 @@ public:
 
     /***
      * @brief Print function for 1-dimentional matrices.
-     * Format example:
+     *        Format example:
      * @code
      * |0.0, 3.0, 4.3|
      * @endcode
