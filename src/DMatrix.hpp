@@ -8,7 +8,7 @@
 
 
 /***
- * @brief DMatrix represents a matrix with a fixed dimension, e.g. a 3-dimensional matrix
+ * @brief Represent a matrix with a fixed dimension, e.g. a 3-dimensional matrix
  * @tparam D Dimension of the matrix
  * @tparam T Type of the elements stored in the matrix
  */
@@ -30,9 +30,8 @@ public:
      * @param next_allocs  Parameter pack for allocation of subsequent dimensions
      */
     template<std::integral Alloc, std::integral... Allocs>
-    requires (sizeof...(Allocs) == D-1)
     explicit DMatrix(Alloc alloc, Allocs... next_allocs)
-                    : std::vector<DMatrix<D - 1, T>>(alloc, DMatrix<D-1,T>(next_allocs...)) {}
+    requires (sizeof...(Allocs) == D-1) : std::vector<DMatrix<D - 1, T>>(alloc, DMatrix<D-1,T>(next_allocs...)) {}
 
     /***
      * @brief Print function for n-dimentional matrices.
@@ -75,8 +74,9 @@ public:
      * @return Reference to the requested element
      */
     template<std::integral Idx, std::integral... Indices>
+    T& operator()(Idx index, Indices... indices)
     requires (sizeof...(Indices) == D-1)
-    T& operator()(Idx index, Indices... indices) {
+    {
         return this->at(index)(indices...);
     }
 
@@ -85,8 +85,9 @@ public:
      * @return Constant reference to the requested element
      */
     template<std::integral Idx, std::integral... Indices>
+    const T& operator()(Idx index, Indices... indices) const
     requires (sizeof...(Indices) == D-1)
-    const T& operator()(Idx index, Indices... indices) const {
+    {
         return this->at(index)(indices...);
     }
 
@@ -100,8 +101,9 @@ public:
      *          will be deleted before assigning the new one
      */
     template<std::integral Idx, std::integral... Indices>
+    DMatrix<D - sizeof...(Indices) - 1, T>& operator()(Idx index, Indices... indices)
     requires (sizeof...(Indices) < D-1) && (sizeof...(Indices) > 0)
-    DMatrix<D - sizeof...(Indices) - 1, T>& operator()(Idx index, Indices... indices) {
+    {
         return this->at(index)(indices...);
     }
 
@@ -110,8 +112,9 @@ public:
      * @return Constant reference to the requested submatrix
      */
     template<std::integral Idx, std::integral... Indices>
+    const DMatrix<D - sizeof...(Indices) - 1, T>& operator()(Idx index, Indices... indices) const
     requires (sizeof...(Indices) < D-1) && (sizeof...(Indices) > 0)
-    const DMatrix<D - sizeof...(Indices) - 1, T>& operator()(Idx index, Indices... indices) const {
+    {
         return this->at(index)(indices...);
     }
 
@@ -188,7 +191,7 @@ std::ostream &operator<<(std::ostream &os, const DMatrix<2,T> &matrix) {
 }
 
 /***
- * @brief Template specialization of DMatrix<T,D> with a single dimension, i.e. a vector
+ * @brief Template specialization of DMatrix with a single dimension, i.e. a vector
  * @tparam T Type of the matrix
  * @see DMatrix
  */
