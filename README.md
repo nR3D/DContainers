@@ -1,11 +1,9 @@
-# tema
-
-## Templatized Matrices
+# Templatized Matrices
 
 - **DMatrix**: n-dimentional matrix of arbitrary size
 - **SMatrix**: matrix of fixed size for each dimension
 
-### Code examples
+## Code examples
 
 ```c++
 // Construction
@@ -38,7 +36,7 @@ subD3Matrix(1) = {24, 25, 26};
 subSMatrix(2) = -3.33;
 ```
 
-#### Printing
+### Printing
 ```
 std::cout << d3Matrix << std::endl;
 
