@@ -65,6 +65,6 @@ Build documentation with:
 doxygen Doxyfile
 ```
 
-> **Note**: given the abundant use of templates and variadics, having an installation of `clang` is recommended.
+> **Note**: given the abundant use of templates and variadics, having a `clang` installation is recommended.
 
-The documentation will be accessible in `build/docs/html/index.html`.
+Documentation will be accessible in `build/docs/html/index.html`.
