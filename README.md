@@ -55,3 +55,16 @@ std::cout << d3Matrix << std::endl;
 >    |4.2, 11.1, 2.1|
 >    |0, 1, -3.33|
 ```
+
+## Documentation
+
+### Doxygen
+
+Build documentation with:
+```shell
+doxygen Doxyfile
+```
+
+> **Note**: given the abundant use of templates and variadics, having an installation of `clang` is recommended.
+
+The documentation will be accessible in `build/docs/html/index.html`.
