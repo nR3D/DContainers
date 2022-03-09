@@ -49,8 +49,8 @@ public:
      * |5.5, 5.51|
      * }
      * @endcode
-     * @see std::ostream::operator<<(std::ostream &, const DMatrix<2,U> &)
-     * @see std::ostream::operator<<(std::ostream &, const DMatrix<1,U> &)
+     * @see operator<<(std::ostream &, const DMatrix<2,U> &)
+     * @see operator<<(std::ostream &, const DMatrix<1,U> &)
      */
     template<std::size_t M, typename U>
     friend std::ostream &operator<<(std::ostream &, const DMatrix<M,U> &);
@@ -97,7 +97,7 @@ public:
      * @param indices Parameter pack of the indices for the lower dimensions of the submatrix
      * @return Reference to the requested submatrix
      * @warning Getting a reference to a submatrix, and then assigning a new submatrix to the parent matrix,
-     *          will result in a dangling reference, since the previous submatrix (to which the reference points)
+     *          will result in a dangling reference, since the previous submatrix (to which the reference points to)
      *          will be deleted before assigning the new one
      */
     template<std::integral Idx, std::integral... Indices>
