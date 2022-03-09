@@ -38,7 +38,7 @@ subD3Matrix(1) = {24, 25, 26};
 subSMatrix(2) = -3.33;
 ```
 
-### Printing
+#### Printing
 ```
 std::cout << d3Matrix << std::endl;
 
