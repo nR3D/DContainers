@@ -16,6 +16,7 @@ private:
         return std::array<std::size_t, sizeof...(Idx)>{Idx...}.at(displacement + num);
     }
 
+    /***  SMatrix_reduction  ***/
     template<typename Seq, std::size_t ...Idx>
     struct SMatrix_reducer {};
 
@@ -28,6 +29,17 @@ private:
     template<std::size_t max, std::size_t ...Idx>
     using SMatrix_reduced_t = typename SMatrix_reducer<std::make_index_sequence<max>, Idx...>::type;
 
+    /*** Array_initializer ***/
+    template<typename U, std::size_t ...I>
+    constexpr std::array<U, N> array_initializer_extractor(const U* const data, std::index_sequence<I...>) {
+        return { data[I]... };
+    }
+
+    template<typename U>
+    constexpr std::array<U, N> array_initializer(const U * const data) {
+        return array_initializer_extractor(data, std::make_index_sequence<N>());
+    }
+
 public:
     template<typename U, std::size_t M, std::size_t ...P>
     requires (sizeof...(P) > 0)
@@ -38,10 +50,9 @@ public:
 
     SMatrix() = default;
 
-    template<typename ...U>
-    requires (std::is_convertible_v<U,T> && ...)
-    SMatrix(const U& ...values) : std::array<SMatrix<T, O...>, N>({values...}) {}
-    
+    SMatrix(std::initializer_list<SMatrix<T, O...>> values)
+        : std::array<SMatrix<T, O...>, N>(array_initializer(std::data(values))) {}
+
     template<std::integral Idx, std::integral... Indices>
     requires (sizeof...(Indices) == D-1)
     T& operator()(Idx index, Indices... indices) {
