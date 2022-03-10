@@ -62,9 +62,11 @@ std::cout << d3Matrix << std::endl;
 
 Build documentation with:
 ```shell
-doxygen Doxyfile
+doxygen docs/Doxyfile
 ```
 
 > **Note**: given the abundant use of templates and variadics, having a `clang` installation is recommended.
 
 Documentation will be accessible in `build/docs/html/index.html`.
+
+> Custom CSS used: [doxygen-awesome-css](https://github.com/jothepro/doxygen-awesome-css)
