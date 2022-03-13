@@ -1,5 +1,5 @@
-#ifndef TEMA_DVECTOR_HPP
-#define TEMA_DVECTOR_HPP
+#ifndef DCONTAINERS_DVECTOR_HPP
+#define DCONTAINERS_DVECTOR_HPP
 
 
 #include <vector>
@@ -249,4 +249,4 @@ std::ostream &operator<<(std::ostream &os, const DVector<1, T> &dVector) {
 }
 
 
-#endif //TEMA_DVECTOR_HPP
+#endif //DCONTAINERS_DVECTOR_HPP

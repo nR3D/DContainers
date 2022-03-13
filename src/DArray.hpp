@@ -1,5 +1,5 @@
-#ifndef TEMA_DARRAY_HPP
-#define TEMA_DARRAY_HPP
+#ifndef DCONTAINERS_DARRAY_HPP
+#define DCONTAINERS_DARRAY_HPP
 
 
 #include <array>
@@ -289,4 +289,4 @@ std::ostream &operator<<(std::ostream & os, const DArray<U, M> &dArray) {
 }
 
 
-#endif //TEMA_DARRAY_HPP
+#endif //DCONTAINERS_DARRAY_HPP
