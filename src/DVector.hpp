@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <array>
+#include <numeric>
 #include <iostream>
 
 
@@ -140,10 +141,8 @@ public:
      * @return Return total amount of element stored
      */
     std::size_t total() const {
-        auto s = 0;
-        for(auto it = this->begin(); it != this->end(); ++it)
-            s += it->total();
-        return s;
+        return std::accumulate(this->begin(), this->end(), 0,
+                               [](auto sum, const auto& dVector) { return sum + dVector.total(); });
     }
 };
 
