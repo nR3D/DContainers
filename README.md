@@ -27,11 +27,11 @@ DArray<double, 2, 3> matrix = {
 d3Vector(1,1,2) = 0;
 matrix(0,2) = 2.1;
 
-// Accessing submatrices (not necessarily by reference)
+// Accessing sub-containers (not necessarily by reference)
 DVector<2, short>& subD3Vector = d3Vector(0);
 DArray<double, 3>& subMatrix = matrix(1);
 
-// Assigning through submatrices
+// Assigning through sub-containers
 subD3Vector(1) = {24, 25, 26};
 subMatrix(2) = -3.33;
 ```
