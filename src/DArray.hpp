@@ -193,13 +193,8 @@ template<typename U, std::size_t M, size_t... P>
 std::ostream &operator<<(std::ostream &os, const DArray<U, M, P...> &dArray)
 requires (sizeof...(P) > 0) {
     auto size = dArray.size();
-    os << "DArray<";
-    auto shape = dArray.shape();
-    for(std::size_t i = 0; i < dArray.D; ++i) {
-        os << shape.at(i);
-        if(i < dArray.D-1)
-            os << ',';
-    }
+    os << "DArray<" << M;
+    ((os << ',' << P), ...);
     os << ">{\n";
     for(std::size_t i = 0; i < size; ++i) {
         os << dArray.at(i);
