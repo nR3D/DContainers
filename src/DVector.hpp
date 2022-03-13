@@ -1,5 +1,5 @@
-#ifndef TEMA_DMATRIX_HPP
-#define TEMA_DMATRIX_HPP
+#ifndef TEMA_DVECTOR_HPP
+#define TEMA_DVECTOR_HPP
 
 
 #include <vector>
@@ -13,16 +13,16 @@
  * @tparam T Type of the elements stored in the matrix
  */
 template<std::size_t D, typename T>
-class DMatrix : public std::vector<DMatrix<D - 1, T>> {
+class DVector : public std::vector<DVector<D - 1, T>> {
 public:
-    using std::vector<DMatrix<D - 1, T>>::vector;
+    using std::vector<DVector<D - 1, T>>::vector;
 
     /***
      * @brief Constructor with a single allocation size for all dimensions
      * @param alloc Number of elements allocated for each dimension
      */
-    explicit DMatrix(std::size_t alloc)
-                    : std::vector<DMatrix<D - 1, T>>(alloc, DMatrix<D-1,T>(alloc)) {}
+    explicit DVector(std::size_t alloc)
+                    : std::vector<DVector<D - 1, T>>(alloc, DVector<D - 1,T>(alloc)) {}
 
     /***
      * @brief Constructor to specify a different allocation for each dimension.
@@ -30,8 +30,8 @@ public:
      * @param next_allocs  Parameter pack for allocation of subsequent dimensions
      */
     template<std::integral Alloc, std::integral... Allocs>
-    explicit DMatrix(Alloc alloc, Allocs... next_allocs)
-    requires (sizeof...(Allocs) == D-1) : std::vector<DMatrix<D - 1, T>>(alloc, DMatrix<D-1,T>(next_allocs...)) {}
+    explicit DVector(Alloc alloc, Allocs... next_allocs)
+    requires (sizeof...(Allocs) == D-1) : std::vector<DVector<D - 1, T>>(alloc, DVector<D - 1,T>(next_allocs...)) {}
 
     /***
      * @brief Print function for n-dimentional matrices.
@@ -39,7 +39,7 @@ public:
      *        for each dimension, while lower dimensions will resemble an handwritten matrix/vector.
      *        Format example:
      * @code
-     * DMatrix<3>[2,3,2]{
+     * DVector<3>[2,3,2]{
      * |0.5, 0.51|
      * |1.5, 1.51|
      * |2.5, 2.51|,
@@ -49,11 +49,11 @@ public:
      * |5.5, 5.51|
      * }
      * @endcode
-     * @see operator<<(std::ostream &, const DMatrix<2,U> &)
-     * @see operator<<(std::ostream &, const DMatrix<1,U> &)
+     * @see operator<<(std::ostream &, const DVector<2,U> &)
+     * @see operator<<(std::ostream &, const DVector<1,U> &)
      */
     template<std::size_t M, typename U>
-    friend std::ostream &operator<<(std::ostream &, const DMatrix<M,U> &);
+    friend std::ostream &operator<<(std::ostream &, const DVector<M,U> &);
 
     /***
      * @brief Print function for 2-dimentional matrices.
@@ -65,7 +65,7 @@ public:
      * @endcode
      */
     template<typename U>
-    friend std::ostream &operator<<(std::ostream &, const DMatrix<2,U> &);
+    friend std::ostream &operator<<(std::ostream &, const DVector<2,U> &);
 
     /***
      * @brief Get a reference to a specific element held by the matrix, specifying its position.
@@ -81,7 +81,7 @@ public:
     }
 
     /***
-     * @see DMatrix<D,T>::operator()(Idx index, Indices... indices)
+     * @see DVector<D,T>::operator()(Idx index, Indices... indices)
      * @return Constant reference to the requested element
      */
     template<std::integral Idx, std::integral... Indices>
@@ -101,18 +101,18 @@ public:
      *          will be deleted before assigning the new one
      */
     template<std::integral Idx, std::integral... Indices>
-    DMatrix<D - sizeof...(Indices) - 1, T>& operator()(Idx index, Indices... indices)
+    DVector<D - sizeof...(Indices) - 1, T>& operator()(Idx index, Indices... indices)
     requires (sizeof...(Indices) < D-1) && (sizeof...(Indices) > 0)
     {
         return this->at(index)(indices...);
     }
 
     /***
-     * @see DMatrix<D,T>::operator()(Idx index, Indices... indices)
+     * @see DVector<D,T>::operator()(Idx index, Indices... indices)
      * @return Constant reference to the requested submatrix
      */
     template<std::integral Idx, std::integral... Indices>
-    const DMatrix<D - sizeof...(Indices) - 1, T>& operator()(Idx index, Indices... indices) const
+    const DVector<D - sizeof...(Indices) - 1, T>& operator()(Idx index, Indices... indices) const
     requires (sizeof...(Indices) < D-1) && (sizeof...(Indices) > 0)
     {
         return this->at(index)(indices...);
@@ -120,19 +120,19 @@ public:
 
     /***
      * @brief Specialization of submatrix dereference for only one dimension lower
-     * @see DMatrix<D,T>::operator()(Idx index, Indices... indices)
+     * @see DVector<D,T>::operator()(Idx index, Indices... indices)
      * @param index Index of the submatrix of lower dimension
      * @return Reference to a submatrix of one dimension lower
      */
-    DMatrix<D - 1, T>& operator()(std::size_t index) {
+    DVector<D - 1, T>& operator()(std::size_t index) {
         return this->at(index);
     }
 
     /***
-     * @see DMatrix<D, T>::operator()(std::size_t index)
+     * @see DVector<D, T>::operator()(std::size_t index)
      * @return Constant reference to a submatrix of one dimension lower
      */
-    const DMatrix<D - 1, T>& operator()(std::size_t index) const {
+    const DVector<D - 1, T>& operator()(std::size_t index) const {
         return this->at(index);
     }
 
@@ -148,7 +148,7 @@ public:
 
     /***
      * @brief Number of elements for each dimensions.
-     * @see DMatrix<D,T>::total()
+     * @see DVector<D,T>::total()
      * @return Array containing higher dimensions first and lower ones last
      */
     std::array<std::size_t,D> shape() const {
@@ -161,9 +161,9 @@ public:
 };
 
 template<std::size_t D, typename T>
-std::ostream &operator<<(std::ostream &os, const DMatrix<D,T> &matrix) {
+std::ostream &operator<<(std::ostream &os, const DVector<D,T> &matrix) {
     auto size = matrix.size();
-    os << "DMatrix<" << D << ">[";
+    os << "DVector<" << D << ">[";
     auto shape = matrix.shape();
     for(std::size_t i = 0; i < D; ++i) {
         os << shape.at(i);
@@ -180,7 +180,7 @@ std::ostream &operator<<(std::ostream &os, const DMatrix<D,T> &matrix) {
 }
 
 template<typename T>
-std::ostream &operator<<(std::ostream &os, const DMatrix<2,T> &matrix) {
+std::ostream &operator<<(std::ostream &os, const DVector<2,T> &matrix) {
     auto size = matrix.size();
     for(std::size_t i = 0; i < size; ++i) {
         os << matrix.at(i);
@@ -191,12 +191,12 @@ std::ostream &operator<<(std::ostream &os, const DMatrix<2,T> &matrix) {
 }
 
 /***
- * @brief Template specialization of DMatrix with a single dimension, i.e. a vector
+ * @brief Template specialization of DVector with a single dimension, i.e. a vector
  * @tparam T Type of the matrix
- * @see DMatrix
+ * @see DVector
  */
 template<typename T>
-class DMatrix<1, T> : public std::vector<T> {
+class DVector<1, T> : public std::vector<T> {
 public:
     using std::vector<T>::vector;
 
@@ -208,7 +208,7 @@ public:
      * @endcode
      */
     template<typename U>
-    friend std::ostream &operator<<(std::ostream &, const DMatrix<1,U> &);
+    friend std::ostream &operator<<(std::ostream &, const DVector<1,U> &);
 
     /***
      * @brief Get reference of element at given position
@@ -220,7 +220,7 @@ public:
     }
 
     /***
-     * @see DMatrix<1,T>::operator()(std::size_t index)
+     * @see DVector<1,T>::operator()(std::size_t index)
      * @return Constant reference to the requested element
      */
     const T& operator()(std::size_t index) const {
@@ -235,7 +235,7 @@ public:
     }
 
     /***
-     * @see DMatrix<D,T>::shape()
+     * @see DVector<D,T>::shape()
      * @return Array containing the number of elements contained in the single dimension of the matrix
      */
     std::array<std::size_t, 1> shape() const {
@@ -244,7 +244,7 @@ public:
 };
 
 template<typename T>
-std::ostream &operator<<(std::ostream &os, const DMatrix<1, T> &matrix) {
+std::ostream &operator<<(std::ostream &os, const DVector<1, T> &matrix) {
     auto size = matrix.size();
     os << '|';
     for(std::size_t i = 0; i < size; ++i) {
@@ -256,4 +256,4 @@ std::ostream &operator<<(std::ostream &os, const DMatrix<1, T> &matrix) {
 }
 
 
-#endif //TEMA_DMATRIX_HPP
+#endif //TEMA_DVECTOR_HPP

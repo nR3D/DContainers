@@ -3,4 +3,4 @@ project(tema)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(tema src/DMatrix.hpp src/SMatrix.hpp)
+add_executable(tema src/DVector.hpp src/DArray.hpp)

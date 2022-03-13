@@ -1,5 +1,5 @@
-#ifndef TEMA_SMATRIX_HPP
-#define TEMA_SMATRIX_HPP
+#ifndef TEMA_DARRAY_HPP
+#define TEMA_DARRAY_HPP
 
 
 #include <array>
@@ -12,7 +12,7 @@
  * @tparam O Parameter pack of the following sizes
  */
 template<typename T, std::size_t N, std::size_t ...O>
-class SMatrix : public std::array<SMatrix<T, O...>, N> {
+class DArray : public std::array<DArray<T, O...>, N> {
 private:
     template<std::size_t ...Idx>
     constexpr static std::size_t get_idx(std::size_t num, std::size_t max) {
@@ -26,7 +26,7 @@ private:
     template<std::size_t ...Seq, std::size_t ...Idx>
     requires (sizeof...(Seq) > 0)
     struct SMatrix_reducer<std::index_sequence<Seq...>, Idx...> {
-        using type = SMatrix<T, get_idx<Idx...>(Seq, sizeof...(Seq)-1)...>;
+        using type = DArray<T, get_idx<Idx...>(Seq, sizeof...(Seq) - 1)...>;
     };
 
     template<typename U, std::size_t ...I>
@@ -42,7 +42,7 @@ protected:
      * @brief Type expressing a lower dimensional matrix.
      * @tparam max Dimension of the resulting matrix
      * @tparam Idx Parameter pack of sizes to be reduced to max
-     * @return SMatrix where only the last "max" sizes have been left
+     * @return DArray where only the last "max" sizes have been left
      */
     template<std::size_t max, std::size_t ...Idx>
     using SMatrix_reduced_t = typename SMatrix_reducer<std::make_index_sequence<max>, Idx...>::type;
@@ -65,7 +65,7 @@ public:
      *        for each dimension, while lower dimensions will resemble an handwritten matrix/vector.
      *        Format example:
      * @code
-     * SMatrix[3]<2,3,2>{
+     * DArray[3]<2,3,2>{
      * |0.5, 0.51|
      * |1.5, 1.51|
      * |2.5, 2.51|,
@@ -75,11 +75,11 @@ public:
      * |5.5, 5.51|
      * }
      * @endcode
-     * @see operator<<(std::ostream &, const SMatrix<U,M1,M2> &)
-     * @see operator<<(std::ostream &, const SMatrix<U,M> &)
+     * @see operator<<(std::ostream &, const DArray<U,M1,M2> &)
+     * @see operator<<(std::ostream &, const DArray<U,M> &)
      */
     template<typename U, std::size_t M, std::size_t ...P>
-    friend std::ostream &operator<<(std::ostream &, const SMatrix<U, M, P...> &)
+    friend std::ostream &operator<<(std::ostream &, const DArray<U, M, P...> &)
     requires (sizeof...(P) > 0);
 
     /***
@@ -92,16 +92,16 @@ public:
      * @endcode
      */
     template<typename U, std::size_t M1, std::size_t M2>
-    friend std::ostream &operator<<(std::ostream &, const SMatrix<U, M1, M2> &);
+    friend std::ostream &operator<<(std::ostream &, const DArray<U, M1, M2> &);
 
-    SMatrix() = default;
+    DArray() = default;
 
     /***
-     * @brief Constructor of SMatrix with a nested initializer_list of SMatrices of lower dimensions
+     * @brief Constructor of DArray with a nested initializer_list of SMatrices of lower dimensions
      * @param values initializer_list of submatrices
      */
-    SMatrix(std::initializer_list<SMatrix<T, O...>> values)
-        : std::array<SMatrix<T, O...>, N>(array_initializer(values)) {}
+    DArray(std::initializer_list<DArray<T, O...>> values)
+        : std::array<DArray<T, O...>, N>(array_initializer(values)) {}
 
     /***
      * @brief Get a reference to a specific element held by the matrix, specifying its position.
@@ -116,7 +116,7 @@ public:
     }
 
     /***
-     * @see DMatrix<T,N,O...>::operator()(Idx index, Indices... indices)
+     * @see DVector<T,N,O...>::operator()(Idx index, Indices... indices)
      * @return Constant reference to the requested element
      */
     template<std::integral Idx, std::integral... Indices>
@@ -130,7 +130,7 @@ public:
      * @param index Index of the higher (i.e. left-most) dimension
      * @param indices Parameter pack of the indices for the lower dimensions of the submatrix
      * @return Reference to the requested submatrix
-     * @see SMatrix<T,N,O...>::SMatrix_reduced_t
+     * @see DArray<T,N,O...>::SMatrix_reduced_t
      * @warning Getting a reference to a submatrix, and then assigning a new submatrix to the parent matrix,
      *          will result in a dangling reference, since the previous submatrix (to which the reference points to)
      *          will be deleted before assigning the new one
@@ -142,8 +142,8 @@ public:
     }
 
     /***
-     * @see SMatrix<T,N,O...>::operator()(Idx index, Indices... indices)
-     * @see SMatrix<T,N,O...>::SMatrix_reduced_t
+     * @see DArray<T,N,O...>::operator()(Idx index, Indices... indices)
+     * @see DArray<T,N,O...>::SMatrix_reduced_t
      * @return Constant reference to the requested submatrix
      */
     template<std::integral Idx, std::integral... Indices>
@@ -154,8 +154,8 @@ public:
 
     /***
      * @brief Specialization of submatrix dereference for only one dimension lower
-     * @see SMatrix<T,N,O...>::operator()(Idx index, Indices... indices)
-     * @see SMatrix<T,N,O...>::SMatrix_reduced_t
+     * @see DArray<T,N,O...>::operator()(Idx index, Indices... indices)
+     * @see DArray<T,N,O...>::SMatrix_reduced_t
      * @param index Index of the submatrix of lower dimension
      * @return Reference to a submatrix of one dimension lower
      */
@@ -164,8 +164,8 @@ public:
     }
 
     /***
-     * @see SMatrix<T,N,O...>::operator()(std::size_t index)
-     * @see SMatrix<T,N,O...>::SMatrix_reduced_t
+     * @see DArray<T,N,O...>::operator()(std::size_t index)
+     * @see DArray<T,N,O...>::SMatrix_reduced_t
      * @return Constant reference to a submatrix of one dimension lower
      */
     const SMatrix_reduced_t<D - 1, N, O...>& operator()(std::size_t index) const {
@@ -181,7 +181,7 @@ public:
 
     /***
      * @brief Number of elements for each dimensions.
-     * @see SMatrix<T,N,O...>::total()
+     * @see DArray<T,N,O...>::total()
      * @return Array containing the size of each dimension as expressed in the template parameter pack
      */
     constexpr std::array<std::size_t,D> shape() const {
@@ -190,10 +190,10 @@ public:
 };
 
 template<typename U, std::size_t M, size_t... P>
-std::ostream &operator<<(std::ostream &os, const SMatrix<U, M, P...> &matrix)
+std::ostream &operator<<(std::ostream &os, const DArray<U, M, P...> &matrix)
 requires (sizeof...(P) > 0) {
     auto size = matrix.size();
-    os << "SMatrix[" << matrix.D << "]<";
+    os << "DArray[" << matrix.D << "]<";
     auto shape = matrix.shape();
     for(std::size_t i = 0; i < matrix.D; ++i) {
         os << shape.at(i);
@@ -210,7 +210,7 @@ requires (sizeof...(P) > 0) {
 }
 
 template<typename U, std::size_t M1, std::size_t M2>
-std::ostream &operator<<(std::ostream &os, const SMatrix<U, M1, M2> &matrix) {
+std::ostream &operator<<(std::ostream &os, const DArray<U, M1, M2> &matrix) {
     for(std::size_t i = 0; i < M1; ++i) {
         os << matrix.at(i);
         if(i < M1-1)
@@ -220,12 +220,12 @@ std::ostream &operator<<(std::ostream &os, const SMatrix<U, M1, M2> &matrix) {
 }
 
 /***
- * @brief Template specialization of SMatrix with a single dimension, i.e. a vector
+ * @brief Template specialization of DArray with a single dimension, i.e. a vector
  * @tparam T Type of the matrix
- * @see SMatrix
+ * @see DArray
  */
 template<typename T, std::size_t N>
-class SMatrix<T,N> : public std::array<T,N> {
+class DArray<T,N> : public std::array<T,N> {
 public:
     using std::array<T,N>::array;
 
@@ -237,16 +237,16 @@ public:
      * @endcode
      */
     template<typename U, std::size_t M>
-    friend std::ostream &operator<<(std::ostream &, const SMatrix<U, M> &);
+    friend std::ostream &operator<<(std::ostream &, const DArray<U, M> &);
 
-    SMatrix() = default;
+    DArray() = default;
 
     /***
-     * @brief Constructor of SMatrix<T,N> with values passed without initializer_lists
-     * @tparam U Type of parameters initialized, must be the same as typename T of SMatrix
+     * @brief Constructor of DArray<T,N> with values passed without initializer_lists
+     * @tparam U Type of parameters initialized, must be the same as typename T of DArray
      */
     template<typename ...U>
-    SMatrix(const U& ...values)
+    DArray(const U& ...values)
     requires (std::is_convertible_v<U,T> && ...) : std::array<T, N>({values...}) {}
 
     /***
@@ -259,7 +259,7 @@ public:
     }
 
     /***
-     * @see SMatrix<T,N>::operator()(std::size_t index)
+     * @see DArray<T,N>::operator()(std::size_t index)
      * @return Constant reference to the requested element
      */
     T operator()(std::size_t index) const {
@@ -274,7 +274,7 @@ public:
     }
 
     /***
-     * @see SMatrix<T,N,O...>::shape()
+     * @see DArray<T,N,O...>::shape()
      * @return Array containing the number of elements contained in the single dimension of the matrix
      */
     constexpr std::array<std::size_t, 1> shape() const {
@@ -283,7 +283,7 @@ public:
 };
 
 template<typename U, std::size_t M>
-std::ostream &operator<<(std::ostream & os, const SMatrix<U, M> &matrix) {
+std::ostream &operator<<(std::ostream & os, const DArray<U, M> &matrix) {
     os << '|';
     for(std::size_t i = 0; i < M; ++i) {
         os << matrix.at(i);
@@ -294,4 +294,4 @@ std::ostream &operator<<(std::ostream & os, const SMatrix<U, M> &matrix) {
 }
 
 
-#endif //TEMA_SMATRIX_HPP
+#endif //TEMA_DARRAY_HPP
