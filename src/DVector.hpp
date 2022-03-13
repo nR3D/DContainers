@@ -138,7 +138,7 @@ public:
     }
 
     /***
-     * @return Return total amount of element stored
+     * @return Return total amount of elements stored
      */
     constexpr std::size_t total() const noexcept {
         return std::accumulate(this->begin(), this->end(), 0,
