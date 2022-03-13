@@ -140,7 +140,7 @@ public:
     /***
      * @return Return total amount of element stored
      */
-    std::size_t total() const {
+    constexpr std::size_t total() const {
         return std::accumulate(this->begin(), this->end(), 0,
                                [](auto sum, const auto& dVector) { return sum + dVector.total(); });
     }
@@ -209,7 +209,7 @@ public:
     /***
      * @return Number of elements held by DVector
      */
-    std::size_t total() const {
+    constexpr std::size_t total() const {
         return this->size();
     }
 };
