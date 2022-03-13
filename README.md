@@ -39,6 +39,7 @@ subMatrix(2) = -3.33;
 ### Printing
 ```
 std::cout << d3Vector << std::endl;
+std::cout << "\nTotal: " << d3Vector.total() << " elements";
 
 >    DVector<3>{
 >    |1, 2, 3|
@@ -47,13 +48,18 @@ std::cout << d3Vector << std::endl;
 >    |8, 9|
 >    |10, 11, 0, 13, 14|
 >    }
+>
+>    Total: 13 elements
 ```
 
 ```
 std::cout << matrix << std::endl;
+std::cout << "\nTotal: " << matrix.total() << " elements";
 
 >    |4.2, 11.1, 2.1|
 >    |0, 1, -3.33|
+>
+>    Total: 6 elements
 ```
 
 ## Documentation
