@@ -142,7 +142,7 @@ public:
     std::size_t total() const {
         auto s = 0;
         for(auto it = this->begin(); it != this->end(); ++it)
-            s += it->size();
+            s += it->total();
         return s;
     }
 };
