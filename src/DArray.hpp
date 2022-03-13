@@ -175,7 +175,7 @@ public:
     /***
      * @return Return total amount of element stored
      */
-    constexpr std::size_t total() const {
+    constexpr std::size_t total() const noexcept {
         return N * (O * ...);
     }
 };
@@ -255,7 +255,7 @@ public:
     /***
      * @return Number of elements stored
      */
-    constexpr std::size_t total() const {
+    constexpr std::size_t total() const noexcept {
         return N;
     }
 };
