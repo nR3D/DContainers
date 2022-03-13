@@ -6,8 +6,8 @@
 #include <iostream>
 
 /***
- * @brief Represent a matrix with a fixed size for each dimension, e.g. a 4x4 square matrix
- * @tparam T Type of the elements stored in the matrix
+ * @brief Represent an array with a fixed size for each dimension
+ * @tparam T Type of the elements stored
  * @tparam N Size of the outer-most dimension
  * @tparam O Parameter pack of the following sizes
  */
@@ -35,12 +35,12 @@ private:
     }
 
 protected:
-    // Total number of dimensions of the matrix
+    // Total number of dimensions of DArray
     static constexpr std::size_t D = sizeof...(O) + 1;
 
     /***
-     * @brief Type expressing a lower dimensional matrix.
-     * @tparam max Dimension of the resulting matrix
+     * @brief Type expressing a lower dimensional DArray.
+     * @tparam max Dimension of the resulting DArray
      * @tparam Idx Parameter pack of sizes to be reduced to max
      * @return DArray where only the last "max" sizes have been left
      */
@@ -48,7 +48,7 @@ protected:
     using SMatrix_reduced_t = typename SMatrix_reducer<std::make_index_sequence<max>, Idx...>::type;
 
     /***
-     * @brief Utility to initialize an array through an initializer_list, maintaining the same order.
+     * @brief Utility to initialize a DArray through an initializer_list, maintaining the same order.
      * @tparam U Type of the initialized objects
      * @param list initializer_list to be converted
      * @return Array containing all elements of list
@@ -60,9 +60,9 @@ protected:
 
 public:
     /***
-     * @brief Print function for n-dimentional matrices.
-     *        Matrices with an higher dimension than 2 will print their dimension and current allocation
-     *        for each dimension, while lower dimensions will resemble an handwritten matrix/vector.
+     * @brief Print function for n-dimentional DArrays.
+     *        DArrays with an higher dimension than 2 will print their dimension and current allocation
+     *        for each dimension, while lower dimensions will resemble an handwritten matrix.
      *        Format example:
      * @code
      * DArray[3]<2,3,2>{
@@ -83,7 +83,7 @@ public:
     requires (sizeof...(P) > 0);
 
     /***
-     * @brief Print function for 2-dimentional matrices.
+     * @brief Print function for 2-dimentional DArrays.
      *        Format example:
      * @code
      * |42.0, 10.5|
@@ -97,14 +97,14 @@ public:
     DArray() = default;
 
     /***
-     * @brief Constructor of DArray with a nested initializer_list of SMatrices of lower dimensions
-     * @param values initializer_list of submatrices
+     * @brief Constructor of DArray with a nested initializer_list of DArrays of lower dimensions
+     * @param values initializer_list of sub-arrays
      */
     DArray(std::initializer_list<DArray<T, O...>> values)
         : std::array<DArray<T, O...>, N>(array_initializer(values)) {}
 
     /***
-     * @brief Get a reference to a specific element held by the matrix, specifying its position.
+     * @brief Get a reference to a specific element held by DArray, specifying its position.
      * @param index Index of the higher (i.e. left-most) dimension
      * @param indices Parameter pack of the indices for the lower dimensions of the element
      * @return Reference to the requested element
@@ -116,7 +116,7 @@ public:
     }
 
     /***
-     * @see DVector<T,N,O...>::operator()(Idx index, Indices... indices)
+     * @see DArray<T,N,O...>::operator()(Idx index, Indices... indices)
      * @return Constant reference to the requested element
      */
     template<std::integral Idx, std::integral... Indices>
@@ -126,13 +126,13 @@ public:
     }
 
     /***
-     * @brief Get a reference to a specific submatrix given its position inside the matrix
+     * @brief Get a reference to a specific sub-array given its position inside DArray
      * @param index Index of the higher (i.e. left-most) dimension
-     * @param indices Parameter pack of the indices for the lower dimensions of the submatrix
-     * @return Reference to the requested submatrix
+     * @param indices Parameter pack of the indices for the lower dimensions of the sub-array
+     * @return Reference to the requested sub-array
      * @see DArray<T,N,O...>::SMatrix_reduced_t
-     * @warning Getting a reference to a submatrix, and then assigning a new submatrix to the parent matrix,
-     *          will result in a dangling reference, since the previous submatrix (to which the reference points to)
+     * @warning Getting a reference to a sub-array, and then assigning a new sub-array to the parent DArray,
+     *          will result in a dangling reference, since the previous sub-array (to which the reference points to)
      *          will be deleted before assigning the new one
      */
     template<std::integral Idx, std::integral... Indices>
@@ -144,7 +144,7 @@ public:
     /***
      * @see DArray<T,N,O...>::operator()(Idx index, Indices... indices)
      * @see DArray<T,N,O...>::SMatrix_reduced_t
-     * @return Constant reference to the requested submatrix
+     * @return Constant reference to the requested sub-array
      */
     template<std::integral Idx, std::integral... Indices>
     const SMatrix_reduced_t<D - sizeof...(Indices) - 1, N, O...>& operator()(Idx index, Indices... indices) const
@@ -153,11 +153,11 @@ public:
     }
 
     /***
-     * @brief Specialization of submatrix dereference for only one dimension lower
+     * @brief Specialization of sub-array dereference for only one dimension lower
      * @see DArray<T,N,O...>::operator()(Idx index, Indices... indices)
      * @see DArray<T,N,O...>::SMatrix_reduced_t
-     * @param index Index of the submatrix of lower dimension
-     * @return Reference to a submatrix of one dimension lower
+     * @param index Index of the sub-array of lower dimension
+     * @return Reference to a sub-array of one dimension lower
      */
     SMatrix_reduced_t<D - 1, N, O...>& operator()(std::size_t index) {
         return this->at(index);
@@ -166,14 +166,14 @@ public:
     /***
      * @see DArray<T,N,O...>::operator()(std::size_t index)
      * @see DArray<T,N,O...>::SMatrix_reduced_t
-     * @return Constant reference to a submatrix of one dimension lower
+     * @return Constant reference to a sub-array of one dimension lower
      */
     const SMatrix_reduced_t<D - 1, N, O...>& operator()(std::size_t index) const {
         return this->at(index);
     }
 
     /***
-     * @return Return total amount of element stored in the matrix
+     * @return Return total amount of element stored
      */
     constexpr std::size_t total() const {
         return N * (O * ...);
@@ -190,19 +190,19 @@ public:
 };
 
 template<typename U, std::size_t M, size_t... P>
-std::ostream &operator<<(std::ostream &os, const DArray<U, M, P...> &matrix)
+std::ostream &operator<<(std::ostream &os, const DArray<U, M, P...> &dArray)
 requires (sizeof...(P) > 0) {
-    auto size = matrix.size();
-    os << "DArray[" << matrix.D << "]<";
-    auto shape = matrix.shape();
-    for(std::size_t i = 0; i < matrix.D; ++i) {
+    auto size = dArray.size();
+    os << "DArray[" << dArray.D << "]<";
+    auto shape = dArray.shape();
+    for(std::size_t i = 0; i < dArray.D; ++i) {
         os << shape.at(i);
-        if(i < matrix.D-1)
+        if(i < dArray.D-1)
             os << ',';
     }
     os << ">{\n";
     for(std::size_t i = 0; i < size; ++i) {
-        os << matrix.at(i);
+        os << dArray.at(i);
         if(i < size-1)
             os << ",\n\n";
     }
@@ -210,9 +210,9 @@ requires (sizeof...(P) > 0) {
 }
 
 template<typename U, std::size_t M1, std::size_t M2>
-std::ostream &operator<<(std::ostream &os, const DArray<U, M1, M2> &matrix) {
+std::ostream &operator<<(std::ostream &os, const DArray<U, M1, M2> &dArray) {
     for(std::size_t i = 0; i < M1; ++i) {
-        os << matrix.at(i);
+        os << dArray.at(i);
         if(i < M1-1)
             os << '\n';
     }
@@ -220,8 +220,8 @@ std::ostream &operator<<(std::ostream &os, const DArray<U, M1, M2> &matrix) {
 }
 
 /***
- * @brief Template specialization of DArray with a single dimension, i.e. a vector
- * @tparam T Type of the matrix
+ * @brief Template specialization of DArray with a single dimension
+ * @tparam T Type of elements stored
  * @see DArray
  */
 template<typename T, std::size_t N>
@@ -230,7 +230,7 @@ public:
     using std::array<T,N>::array;
 
     /***
-     * @brief Print function for 1-dimentional matrices.
+     * @brief Print function for 1-dimentional DArrays.
      *        Format example:
      * @code
      * |0.0, 3.0, 4.3|
@@ -267,7 +267,7 @@ public:
     }
 
     /***
-     * @return Number of elements held by the matrix
+     * @return Number of elements stored
      */
     constexpr std::size_t total() const {
         return N;
@@ -275,7 +275,7 @@ public:
 
     /***
      * @see DArray<T,N,O...>::shape()
-     * @return Array containing the number of elements contained in the single dimension of the matrix
+     * @return Array containing the number of elements contained in the single dimension of DArray
      */
     constexpr std::array<std::size_t, 1> shape() const {
         return { N };
@@ -283,10 +283,10 @@ public:
 };
 
 template<typename U, std::size_t M>
-std::ostream &operator<<(std::ostream & os, const DArray<U, M> &matrix) {
+std::ostream &operator<<(std::ostream & os, const DArray<U, M> &dArray) {
     os << '|';
     for(std::size_t i = 0; i < M; ++i) {
-        os << matrix.at(i);
+        os << dArray.at(i);
         if(i < M-1)
             os << ", ";
     }
