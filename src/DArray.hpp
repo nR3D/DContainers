@@ -178,15 +178,6 @@ public:
     constexpr std::size_t total() const {
         return N * (O * ...);
     }
-
-    /***
-     * @brief Number of elements for each dimensions.
-     * @see DArray<T,N,O...>::total()
-     * @return Array containing the size of each dimension as expressed in the template parameter pack
-     */
-    constexpr std::array<std::size_t,D> shape() const {
-        return { N, O... };
-    }
 };
 
 template<typename U, std::size_t M, size_t... P>
@@ -266,14 +257,6 @@ public:
      */
     constexpr std::size_t total() const {
         return N;
-    }
-
-    /***
-     * @see DArray<T,N,O...>::shape()
-     * @return Array containing the number of elements contained in the single dimension of DArray
-     */
-    constexpr std::array<std::size_t, 1> shape() const {
-        return { N };
     }
 };
 

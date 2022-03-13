@@ -145,19 +145,6 @@ public:
             s += it->size();
         return s;
     }
-
-    /***
-     * @brief Number of elements for each dimensions.
-     * @see DVector<D,T>::total()
-     * @return Array containing higher dimensions first and lower ones last
-     */
-    std::array<std::size_t,D> shape() const {
-        std::array<std::size_t,D> dimensions;
-        dimensions[0] = this->size();
-        auto rec = this->at(0).shape();
-        std::copy(rec.begin(), rec.end(), dimensions.begin() + 1);
-        return dimensions;
-    }
 };
 
 template<std::size_t D, typename T>
@@ -225,14 +212,6 @@ public:
      */
     std::size_t total() const {
         return this->size();
-    }
-
-    /***
-     * @see DVector<D,T>::shape()
-     * @return Array containing the number of elements contained in the single dimension of DVector
-     */
-    std::array<std::size_t, 1> shape() const {
-        return { this->size() };
     }
 };
 
