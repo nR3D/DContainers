@@ -39,7 +39,7 @@ public:
      *        for each dimension, while lower dimensions will resemble an handwritten matrix.
      *        Format example:
      * @code
-     * DVector<3>[2,3,2]{
+     * DVector<3>{
      * |0.5, 0.51|
      * |1.5, 1.51|
      * |2.5, 2.51|,
@@ -163,14 +163,7 @@ public:
 template<std::size_t D, typename T>
 std::ostream &operator<<(std::ostream &os, const DVector<D,T> &dVector) {
     auto size = dVector.size();
-    os << "DVector<" << D << ">[";
-    auto shape = dVector.shape();
-    for(std::size_t i = 0; i < D; ++i) {
-        os << shape.at(i);
-        if(i < D-1)
-            os << ',';
-    }
-    os << "]{\n";
+    os << "DVector<" << D << ">{\n";
     for(std::size_t i = 0; i < size; ++i) {
         os << dVector.at(i);
         if(i < size-1)

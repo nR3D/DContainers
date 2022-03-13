@@ -40,7 +40,7 @@ subMatrix(2) = -3.33;
 ```
 std::cout << d3Vector << std::endl;
 
->    DVector<3>[2,2,3]{
+>    DVector<3>{
 >    |1, 2, 3|
 >    |24, 25, 26|,
 >    

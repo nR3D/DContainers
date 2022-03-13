@@ -65,7 +65,7 @@ public:
      *        for each dimension, while lower dimensions will resemble an handwritten matrix.
      *        Format example:
      * @code
-     * DArray[3]<2,3,2>{
+     * DArray<2,3,2>{
      * |0.5, 0.51|
      * |1.5, 1.51|
      * |2.5, 2.51|,
@@ -193,7 +193,7 @@ template<typename U, std::size_t M, size_t... P>
 std::ostream &operator<<(std::ostream &os, const DArray<U, M, P...> &dArray)
 requires (sizeof...(P) > 0) {
     auto size = dArray.size();
-    os << "DArray[" << dArray.D << "]<";
+    os << "DArray<";
     auto shape = dArray.shape();
     for(std::size_t i = 0; i < dArray.D; ++i) {
         os << shape.at(i);
