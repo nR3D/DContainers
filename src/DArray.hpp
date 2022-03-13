@@ -21,11 +21,11 @@ private:
     }
 
     template<typename Seq, std::size_t ...Idx>
-    struct SMatrix_reducer {};
+    struct DArray_reducer {};
 
     template<std::size_t ...Seq, std::size_t ...Idx>
     requires (sizeof...(Seq) > 0)
-    struct SMatrix_reducer<std::index_sequence<Seq...>, Idx...> {
+    struct DArray_reducer<std::index_sequence<Seq...>, Idx...> {
         using type = DArray<T, get_idx<Idx...>(Seq, sizeof...(Seq) - 1)...>;
     };
 
@@ -45,7 +45,7 @@ protected:
      * @return DArray where only the last "max" sizes have been left
      */
     template<std::size_t max, std::size_t ...Idx>
-    using SMatrix_reduced_t = typename SMatrix_reducer<std::make_index_sequence<max>, Idx...>::type;
+    using DArray_reduced_t = typename DArray_reducer<std::make_index_sequence<max>, Idx...>::type;
 
     /***
      * @brief Utility to initialize a DArray through an initializer_list, maintaining the same order.
@@ -130,24 +130,24 @@ public:
      * @param index Index of the higher (i.e. left-most) dimension
      * @param indices Parameter pack of the indices for the lower dimensions of the sub-array
      * @return Reference to the requested sub-array
-     * @see DArray<T,N,O...>::SMatrix_reduced_t
+     * @see DArray<T,N,O...>::DArray_reduced_t
      * @warning Getting a reference to a sub-array, and then assigning a new sub-array to the parent DArray,
      *          will result in a dangling reference, since the previous sub-array (to which the reference points to)
      *          will be deleted before assigning the new one
      */
     template<std::integral Idx, std::integral... Indices>
-    SMatrix_reduced_t<D - sizeof...(Indices) - 1, N, O...>& operator()(Idx index, Indices... indices)
+    DArray_reduced_t<D - sizeof...(Indices) - 1, N, O...>& operator()(Idx index, Indices... indices)
     requires (sizeof...(Indices) < D-1) && (sizeof...(Indices) > 0) {
         return this->at(index)(indices...);
     }
 
     /***
      * @see DArray<T,N,O...>::operator()(Idx index, Indices... indices)
-     * @see DArray<T,N,O...>::SMatrix_reduced_t
+     * @see DArray<T,N,O...>::DArray_reduced_t
      * @return Constant reference to the requested sub-array
      */
     template<std::integral Idx, std::integral... Indices>
-    const SMatrix_reduced_t<D - sizeof...(Indices) - 1, N, O...>& operator()(Idx index, Indices... indices) const
+    const DArray_reduced_t<D - sizeof...(Indices) - 1, N, O...>& operator()(Idx index, Indices... indices) const
     requires (sizeof...(Indices) < D-1) && (sizeof...(Indices) > 0) {
         return this->at(index)(indices...);
     }
@@ -155,20 +155,20 @@ public:
     /***
      * @brief Specialization of sub-array dereference for only one dimension lower
      * @see DArray<T,N,O...>::operator()(Idx index, Indices... indices)
-     * @see DArray<T,N,O...>::SMatrix_reduced_t
+     * @see DArray<T,N,O...>::DArray_reduced_t
      * @param index Index of the sub-array of lower dimension
      * @return Reference to a sub-array of one dimension lower
      */
-    SMatrix_reduced_t<D - 1, N, O...>& operator()(std::size_t index) {
+    DArray_reduced_t<D - 1, N, O...>& operator()(std::size_t index) {
         return this->at(index);
     }
 
     /***
      * @see DArray<T,N,O...>::operator()(std::size_t index)
-     * @see DArray<T,N,O...>::SMatrix_reduced_t
+     * @see DArray<T,N,O...>::DArray_reduced_t
      * @return Constant reference to a sub-array of one dimension lower
      */
-    const SMatrix_reduced_t<D - 1, N, O...>& operator()(std::size_t index) const {
+    const DArray_reduced_t<D - 1, N, O...>& operator()(std::size_t index) const {
         return this->at(index);
     }
 
