@@ -92,3 +92,9 @@ doxygen docs/Doxyfile
 Documentation will be accessible in `build/docs/html/index.html`.
 
 > Custom CSS used: [doxygen-awesome-css](https://github.com/jothepro/doxygen-awesome-css)
+
+## Unit testing
+
+Unit tests are based on framework [googletest](https://github.com/google/googletest), and are located inside `tests/`.
+
+They can be run through executable `unit_tests`, created by CMake in the build directory.
