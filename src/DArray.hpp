@@ -4,6 +4,7 @@
 
 #include <array>
 #include <iostream>
+#include <variant>
 
 /***
  * @brief Represent an array with a fixed size for each dimension
@@ -14,6 +15,8 @@
 template<typename T, std::size_t N, std::size_t ...O>
 class DArray : public std::array<DArray<T, O...>, N> {
 private:
+    static constexpr std::size_t N_v = N;
+
     template<std::size_t ...Idx>
     constexpr static std::size_t get_idx(std::size_t num, std::size_t max) {
         auto displacement = sizeof...(Idx) - max - 1;
@@ -32,6 +35,16 @@ private:
     template<typename U, std::size_t ...I>
     constexpr std::array<U, N> array_initializer_extractor(const U* const data, std::index_sequence<I...>) {
         return { data[I]... };
+    }
+
+    template<std::size_t M, std::size_t ...P>
+    static constexpr DArray<T, M, P...> fromArray(const std::array<DArray<T, P...>, M>& array) {
+        return DArray<T,M,P...>(std::forward<decltype(array)>(array));
+    }
+
+    template<std::size_t M, std::size_t ...P>
+    static constexpr DArray<T, M, P...> fromArray(std::array<DArray<T, P...>, M>&& array) {
+        return DArray<T,M,P...>(std::forward<decltype(array)>(array));
     }
 
 protected:
@@ -103,6 +116,10 @@ public:
     DArray(std::initializer_list<DArray<T, O...>> values)
         : std::array<DArray<T, O...>, N>(array_initializer(values)) {}
 
+    DArray(const std::array<DArray<T, O...>, N>& array) : std::array<DArray<T, O...>, N>(array) {}
+
+    DArray(std::array<DArray<T, O...>, N>&& array) : std::array<DArray<T, O...>, N>(std::move(array)) {}
+
     /***
      * @brief Get a reference to a specific element held by DArray, specifying its position.
      * @param index Index of the higher (i.e. left-most) dimension
@@ -172,6 +189,29 @@ public:
         return this->at(index);
     }
 
+    DArray<T,N,O...> operator()() const {
+        return *this;
+    }
+
+    template<typename... U>
+    decltype(auto) operator()(DSpan<> span, U... spans) const {
+        return operator()(DSpan<0,N-1>(), spans...);
+    }
+
+    template<std::size_t Value, typename... U>
+    decltype(auto) operator()(DSpan<Value> span, U... spans) const {
+        return this->at(Value)(spans...);
+    }
+
+    template<std::size_t From, std::size_t To, typename... U>
+    decltype(auto) operator()(DSpan<From, To> span, U... spans) const {
+        std::array<decltype(this->at(0)(spans...)), To - From + 1> data;
+        auto j = 0;
+        for(auto i = From; i <= To; ++i)
+            data.at(j++) = this->at(i)(spans...);
+        return fromArray(data);
+    }
+
     /***
      * @return Return total amount of elements stored
      */
@@ -235,6 +275,10 @@ public:
     DArray(const U& ...values)
     requires (std::is_convertible_v<U,T> && ...) : std::array<T, N>({values...}) {}
 
+    DArray(const std::array<T,N>& array) : std::array<T,N>(array) {}
+
+    DArray(std::array<T,N>&& array) : std::array<T,N>(std::move(array)) {}
+
     /***
      * @brief Get reference of element at given position
      * @param index Position of the element
@@ -250,6 +294,29 @@ public:
      */
     T operator()(std::size_t index) const {
         return this->at(index);
+    }
+
+    DArray<T,N> operator()() const {
+        return *this;
+    }
+
+    DArray<T, N> operator()(const DSpan<> span) const
+    {
+        return *this;
+    }
+
+    template<std::size_t Value>
+    DArray<T, 1> operator()(const DSpan<Value> span) const {
+        return { this->at(Value) };
+    }
+
+    template<std::size_t From, std::size_t To>
+    DArray<T, To - From + 1> operator()(const DSpan<From, To> span) const {
+        std::array<T, To - From + 1> data;
+        auto j = 0;
+        for(auto i = From; i <= To; ++i)
+            data.at(j++) = this->at(i);
+        return data;
     }
 
     /***

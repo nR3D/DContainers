@@ -140,11 +140,11 @@ public:
     }
 
     template<typename J, typename... K>
-    DVector<D,T> operator()(J span, K... spans)
+    DVector<D,T> operator()(J span, K... spans) const
     requires (sizeof...(K) == D-1) && std::is_convertible_v<J,Span> && (std::is_convertible_v<K,Span> && ...)
     {
-        std::size_t from = span.isAll() ? 0 : span.from(),
-                to   = span.isAll() ? this->size()-1 : span.to();
+        std::size_t from = span.isAll ? 0 : span.from,
+                to   = span.isAll ? this->size()-1 : span.to;
         DVector<D,T> dVector (to - from + 1);
         for(std::size_t i = from, j = 0; i <= to; ++i)
             dVector.at(j++) = std::move(this->at(i)(spans...));
@@ -220,10 +220,10 @@ public:
         return this->at(index);
     }
 
-    DVector<1,T> operator()(Span index) {
-        if(index.isAll())
+    DVector<1,T> operator()(Span span) const {
+        if(span.isAll)
             return *this;
-        return { this->begin() + index.from(), this->end() - this->size() + index.to() + 1 };
+        return {this->begin() + span.from, this->end() - this->size() + span.to + 1 };
     }
 
     /***

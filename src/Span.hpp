@@ -6,45 +6,45 @@
 /***
  * @brief Represent a span of indices from one index to another
  */
-class Span {
+struct Span {
 private:
-    std::size_t _from, _to;
-    const bool _all;
-    constexpr Span() : _from(0), _to(0), _all(true) {}
+    constexpr Span() : from(0), to(0), isAll(true) {}
 public:
+    /***
+     * @brief First index spanned
+     */
+    const std::size_t from;
+
+    /***
+     * @brief Last index spanned (included)
+     */
+    const std::size_t to;
+
+    /***
+     * @brief true only if the object it's been constructed using static method all()
+     * @see Span::all()
+     */
+    const bool isAll;
+
     /***
      * @brief Construct a Span object representing an interval between two indices
      * @param from starting index (included)
      * @param to final index (included, not past-the-end)
      */
-    Span(std::size_t from, std::size_t to) : _from(from), _to(to), _all(false) {}
+    constexpr Span(std::size_t _from, std::size_t _to) : from(_from), to(_to), isAll(false) {}
 
     /***
      * @brief Construct a Span object representing a single index, equals to Span(value, value)
      * @param value index
      */
-    explicit Span(std::size_t value) : _from(value), _to(value), _all(false) {}
+    explicit constexpr Span(std::size_t value) : from(value), to(value), isAll(false) {}
 
-    /***
-     * @return First index spanned (included)
-     */
-    std::size_t constexpr from() const {
-        return _from;
-    }
-
-    /***
-     * @return Last index spanned (included)
-     */
-    std::size_t constexpr to() const {
-        return _to;
-    }
-
-    /***
-     * @return true only if the object it's been constructed using static method all()
-     * @see Span::all()
-     */
-    bool constexpr isAll() const {
-        return _all;
+    constexpr bool operator==(const Span& other) const {
+        if(isAll && other.isAll)
+            return true;
+        if(from == other.from && to == other.to)
+            return true;
+        return false;
     }
 
     /***
@@ -53,6 +53,46 @@ public:
     static constexpr Span all()  {
         return Span{};
     }
+};
+
+
+template<std::size_t ...T>
+requires (sizeof...(T) >= 0 && sizeof...(T) <= 2)
+class DSpan : public Span {};
+
+template<>
+class DSpan<> : public Span {
+private:
+    constexpr DSpan() : Span(Span::all()) {};
+
+public:
+    static constexpr DSpan<> all() {
+        return DSpan<>{};
+    }
+};
+
+template<std::size_t Value>
+class DSpan<Value> : public Span {
+public:
+    explicit constexpr DSpan() : Span(Value) {}
+};
+
+template<std::size_t From, std::size_t To>
+class DSpan<From, To> : public Span {
+public:
+    constexpr DSpan() : Span(From, To) {}
+};
+
+
+class SpanWrapper {
+public:
+    template<std::size_t Value>
+    static constexpr DSpan<Value> index() { return DSpan<Value>{}; }
+
+    template<std::size_t From, std::size_t To>
+    static constexpr DSpan<From, To> interval() { return DSpan<From, To>{}; }
+
+    static constexpr DSpan<> all() { return DSpan<>::all(); }
 };
 
 
