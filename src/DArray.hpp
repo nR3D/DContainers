@@ -194,17 +194,20 @@ public:
     }
 
     template<typename... U>
-    decltype(auto) operator()(DSpan<> span, U... spans) const {
+    decltype(auto) operator()(DSpan<> span, U... spans) const
+    requires (sizeof...(U) <= sizeof...(O)) {
         return operator()(DSpan<0,N-1>(), spans...);
     }
 
     template<std::size_t Value, typename... U>
-    decltype(auto) operator()(DSpan<Value> span, U... spans) const {
+    decltype(auto) operator()(DSpan<Value> span, U... spans) const
+    requires (sizeof...(U) <= sizeof...(O)) {
         return this->at(Value)(spans...);
     }
 
     template<std::size_t From, std::size_t To, typename... U>
-    decltype(auto) operator()(DSpan<From, To> span, U... spans) const {
+    decltype(auto) operator()(DSpan<From, To> span, U... spans) const
+    requires (sizeof...(U) <= sizeof...(O)) {
         std::array<decltype(this->at(0)(spans...)), To - From + 1> data;
         auto j = 0;
         for(auto i = From; i <= To; ++i)
