@@ -16,8 +16,6 @@
 template<typename T, std::size_t N, std::size_t ...O>
 class DArray : public std::array<DArray<T, O...>, N> {
 private:
-    static constexpr std::size_t N_v = N;
-
     template<std::size_t ...Idx>
     constexpr static std::size_t get_idx(std::size_t num, std::size_t max) {
         auto displacement = sizeof...(Idx) - max - 1;
@@ -195,23 +193,33 @@ public:
     }
 
     template<typename... U>
-    decltype(auto) operator()(DSpan<> span, U... spans) const
+    decltype(auto) operator()(DSpan<SpanSize::All> span, U... spans) const
     requires (sizeof...(U) <= sizeof...(O)) {
-        return operator()(DSpan<0,N-1>(), spans...);
+        return operator()(DSpan<SpanSize::Interval<0,N-1>>(), spans...);
     }
 
     template<std::size_t Value, typename... U>
-    decltype(auto) operator()(DSpan<Value> span, U... spans) const
+    decltype(auto) operator()(DSpan<SpanSize::Index<Value>> span, U... spans) const
     requires (sizeof...(U) <= sizeof...(O)) {
         return this->at(Value)(spans...);
     }
 
     template<std::size_t From, std::size_t To, typename... U>
-    decltype(auto) operator()(DSpan<From, To> span, U... spans) const
+    decltype(auto) operator()(DSpan<SpanSize::Interval<From, To>> span, U... spans) const
     requires (sizeof...(U) <= sizeof...(O)) {
         std::array<decltype(this->at(0)(spans...)), To - From + 1> data;
         auto j = 0;
         for(auto i = From; i <= To; ++i)
+            data.at(j++) = this->at(i)(spans...);
+        return fromArray(data);
+    }
+
+    template<std::size_t Size, typename... U>
+    decltype(auto) operator()(DSpan<SpanSize::Interval<Size>> span, U... spans) const
+    requires (sizeof...(U) <= sizeof...(O)) {
+        std::array<decltype(this->at(0)(spans...)), Size> data;
+        auto j = 0;
+        for(auto i = span.from; i <= span.to; ++i)
             data.at(j++) = this->at(i)(spans...);
         return fromArray(data);
     }
@@ -304,21 +312,30 @@ public:
         return *this;
     }
 
-    DArray<T, N> operator()(const DSpan<> span) const
+    DArray<T, N> operator()(const DSpan<SpanSize::All> span) const
     {
         return *this;
     }
 
     template<std::size_t Value>
-    DArray<T, 1> operator()(const DSpan<Value> span) const {
+    DArray<T, 1> operator()(const DSpan<SpanSize::Index<Value>> span) const {
         return { this->at(Value) };
     }
 
     template<std::size_t From, std::size_t To>
-    DArray<T, To - From + 1> operator()(const DSpan<From, To> span) const {
+    DArray<T, To - From + 1> operator()(const DSpan<SpanSize::Interval<From, To>> span) const {
         std::array<T, To - From + 1> data;
         auto j = 0;
         for(auto i = From; i <= To; ++i)
+            data.at(j++) = this->at(i);
+        return data;
+    }
+
+    template<std::size_t Size>
+    DArray<T, Size> operator()(const DSpan<SpanSize::Interval<Size>> span) const {
+        std::array<T, Size> data;
+        auto j = 0;
+        for(auto i = span.from; i <= span.to; ++i)
             data.at(j++) = this->at(i);
         return data;
     }
