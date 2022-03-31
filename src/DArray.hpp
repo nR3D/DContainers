@@ -5,6 +5,7 @@
 #include <array>
 #include <iostream>
 #include <variant>
+#include "Span/DSpan.hpp"
 
 /***
  * @brief Represent an array with a fixed size for each dimension

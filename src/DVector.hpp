@@ -7,7 +7,7 @@
 #include <numeric>
 #include <iostream>
 
-#include "Span.hpp"
+#include "Span/Span.hpp"
 
 
 /***

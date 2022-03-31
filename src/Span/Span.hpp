@@ -56,48 +56,4 @@ public:
 };
 
 
-template<std::size_t ...T>
-requires (sizeof...(T) >= 0 && sizeof...(T) <= 2)
-class DSpan : public Span {};
-
-template<>
-class DSpan<> : public Span {
-private:
-    constexpr DSpan() : Span(Span::all()) {};
-
-public:
-    static constexpr DSpan<> all() {
-        return DSpan<>{};
-    }
-};
-
-template<std::size_t Value>
-class DSpan<Value> : public Span {
-public:
-    explicit constexpr DSpan() : Span(Value) {}
-};
-
-template<std::size_t From, std::size_t To>
-class DSpan<From, To> : public Span {
-public:
-    constexpr DSpan() : Span(From, To) {}
-};
-
-
-class SpanWrapper {
-public:
-    template<std::size_t Value>
-    static constexpr DSpan<Value> index() { return DSpan<Value>{}; }
-
-    static constexpr Span index(std::size_t value) { return Span{value}; }
-
-    template<std::size_t From, std::size_t To>
-    static constexpr DSpan<From, To> interval() { return DSpan<From, To>{}; }
-
-    static constexpr Span interval(std::size_t from, std::size_t to) { return Span{from, to}; }
-
-    static constexpr DSpan<> all() { return DSpan<>::all(); }
-};
-
-
 #endif //DCONTAINERS_SPAN_HPP
