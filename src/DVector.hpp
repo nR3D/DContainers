@@ -223,7 +223,10 @@ public:
     DVector<1,T> operator()(Span span) const {
         if(span.isAll)
             return *this;
-        return {this->begin() + span.from, this->end() - this->size() + span.to + 1 };
+        if(span.from >= this->size())
+            return {};
+        auto to = span.to >= this->size() ? this->size()-1 : span.to;
+        return {this->begin() + span.from, this->end() - this->size() + to + 1 };
     }
 
     /***
