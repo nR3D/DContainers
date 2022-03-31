@@ -42,13 +42,18 @@ public:
 template<std::size_t From, std::size_t To>
 class DSpan<SpanSize::Interval<From, To>> : public Span {
 public:
-    constexpr DSpan() : Span(From, To) {}
+    constexpr DSpan() : Span(From, To)  {}
 };
 
 template<std::size_t Size>
 class DSpan<SpanSize::Interval<Size>> : public Span {
 public:
-    constexpr DSpan(std::size_t from, std::size_t to) : Span(from, to) {}
+    constexpr DSpan(std::size_t from, std::size_t to) : Span(from, to) {
+        if(to - from + 1 != Size)
+            throw std::length_error(
+                    "Span passed as parameter (from=" + std::to_string(from) + ", to=" + std::to_string(to) + ")" +
+                    " has a different size than template (Size=" + std::to_string(Size) + ")");
+    }
 };
 
 #endif //DCONTAINERS_DSPAN_HPP
