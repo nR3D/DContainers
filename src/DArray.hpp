@@ -206,7 +206,7 @@ public:
 
     template<std::size_t From, std::size_t To, typename... U>
     decltype(auto) operator()(DSpan<SpanSize::Interval<From, To>> span, U... spans) const
-    requires (sizeof...(U) <= sizeof...(O)) {
+    requires (sizeof...(U) <= sizeof...(O) && From < N && To < N) {
         std::array<decltype(this->at(0)(spans...)), To - From + 1> data;
         auto j = 0;
         for(auto i = From; i <= To; ++i)
@@ -216,7 +216,7 @@ public:
 
     template<std::size_t Size, typename... U>
     decltype(auto) operator()(DSpan<SpanSize::Interval<Size>> span, U... spans) const
-    requires (sizeof...(U) <= sizeof...(O)) {
+    requires (sizeof...(U) <= sizeof...(O) && Size <= N) {
         std::array<decltype(this->at(0)(spans...)), Size> data;
         auto j = 0;
         for(auto i = span.from; i <= span.to; ++i)
@@ -323,7 +323,8 @@ public:
     }
 
     template<std::size_t From, std::size_t To>
-    DArray<T, To - From + 1> operator()(const DSpan<SpanSize::Interval<From, To>> span) const {
+    DArray<T, To - From + 1> operator()(const DSpan<SpanSize::Interval<From, To>> span) const
+    requires (From < N && To < N) {
         std::array<T, To - From + 1> data;
         auto j = 0;
         for(auto i = From; i <= To; ++i)
@@ -332,7 +333,8 @@ public:
     }
 
     template<std::size_t Size>
-    DArray<T, Size> operator()(const DSpan<SpanSize::Interval<Size>> span) const {
+    DArray<T, Size> operator()(const DSpan<SpanSize::Interval<Size>> span) const
+    requires (Size <= N) {
         std::array<T, Size> data;
         auto j = 0;
         for(auto i = span.from; i <= span.to; ++i)
