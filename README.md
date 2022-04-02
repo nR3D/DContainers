@@ -12,7 +12,7 @@ DContainers generalize the last approach, giving a shorthand way to write recurs
 For instance, the above example could be written using class `DArray`:
 - `DArray<int, 3, 3>`
 
-Some helper methods are then offered to easily fetch stored elements, like `arrayObject(1,2)` which corresponds to `arrayObject.at(1).at(2)`.
+Some helper methods are then offered to easily fetch stored elements, like `arrayObject(1,2)`, which corresponds to `arrayObject.at(1).at(2)`.
 
 ## Classes implemented
 
@@ -76,6 +76,23 @@ std::cout << "\nTotal: " << matrix.total() << " elements";
 >    |0, 1, -3.33|
 >
 >    Total: 6 elements
+```
+
+### Spans
+
+Span objects let define views across intervals for each dimension of the container.
+
+```c++
+DDVector<3, short> view3DVector = d3Vector(Span(1), Span::all(), Span(0,1));
+
+std::cout << view3DVector << std::endl;
+```
+
+```
+>    DVector<3>{
+>    |8, 9|
+>    |10, 11|
+>    }
 ```
 
 ## Documentation
