@@ -139,6 +139,15 @@ public:
         return this->at(index);
     }
 
+
+    /***
+     * @brief View specific intervals of the vector using Span objects for each dimension
+     * @param span First Span object to dereference, corresponding to the higher dimension
+     * @param spans Parameter pack of following Span object
+     * @return DVector containing copies of elements represented by the given Span objects
+     * @see Span
+     * @see SpanWrapper
+     */
     template<typename J, typename... K>
     DVector<D,T> operator()(J span, K... spans) const
     requires (sizeof...(K) == D-1) && std::is_convertible_v<J,Span> && (std::is_convertible_v<K,Span> && ...)
@@ -220,6 +229,13 @@ public:
         return this->at(index);
     }
 
+    /***
+     * @brief View a sub-vector corresponding to a given interval
+     * @param span Span object describing an interval of elements
+     * @return DVector containing copies of the values spanned
+     * @see Span
+     * @see SpanWrapper
+     */
     DVector<1,T> operator()(Span span) const {
         if(span.isAll)
             return *this;
