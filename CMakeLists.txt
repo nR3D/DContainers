@@ -32,7 +32,10 @@ add_executable(
         src/DVector.hpp
         src/DArray.hpp
         tests/DVector_tests.cpp
-        tests/DArray_tests.cpp)
+        tests/DArray_tests.cpp
+        tests/Span_tests.cpp
+        tests/DSpan_tests.cpp
+        tests/SpanWrapper_tests.cpp)
 target_link_libraries(
         unit_tests
         gtest_main
