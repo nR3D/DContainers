@@ -37,11 +37,6 @@ private:
     }
 
     template<std::size_t M, std::size_t ...P>
-    static constexpr DArray<T, M, P...> fromArray(const std::array<DArray<T, P...>, M>& array) {
-        return DArray<T,M,P...>(std::forward<decltype(array)>(array));
-    }
-
-    template<std::size_t M, std::size_t ...P>
     static constexpr DArray<T, M, P...> fromArray(std::array<DArray<T, P...>, M>&& array) {
         return DArray<T,M,P...>(std::forward<decltype(array)>(array));
     }
@@ -252,7 +247,7 @@ public:
         auto j = 0;
         for(auto i = From; i <= To; ++i)
             data.at(j++) = this->at(i)(spans...);
-        return fromArray(data);
+        return fromArray(std::move(data));
     }
 
     /***
@@ -271,7 +266,7 @@ public:
         auto j = 0;
         for(auto i = span.from; i <= span.to; ++i)
             data.at(j++) = this->at(i)(spans...);
-        return fromArray(data);
+        return fromArray(std::move(data));
     }
 
     /***
