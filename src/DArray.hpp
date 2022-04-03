@@ -225,8 +225,9 @@ public:
      */
     template<std::size_t Value, typename... U>
     decltype(auto) operator()(DSpan<SpanSize::Index<Value>> span, U... spans) const
-    requires (sizeof...(U) <= sizeof...(O)) {
-        return this->at(Value)(spans...);
+    requires (sizeof...(U) <= sizeof...(O) && Value < N) {
+        std::array<decltype(this->at(Value)(spans...)), 1> data = { this->at(Value)(spans...) };
+        return fromArray(std::move(data));
     }
 
     /***
