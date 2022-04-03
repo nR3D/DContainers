@@ -50,12 +50,16 @@ DArray<double, 3>& subMatrix = matrix(1);
 // Assigning through sub-containers
 subD3Vector(1) = {24, 25, 26};
 subMatrix(2) = -3.33;
+
+// Define views on containers
+DVector<3, short> view3DVector = d3Vector(Span(1), Span::all(), Span(0,1));
 ```
 
 ### Printing
-```
+```c++
 std::cout << d3Vector << std::endl;
 std::cout << "\nTotal: " << d3Vector.total() << " elements";
+
 
 >    DVector<3>{
 >    |1, 2, 3|
@@ -66,33 +70,28 @@ std::cout << "\nTotal: " << d3Vector.total() << " elements";
 >    }
 >
 >    Total: 13 elements
-```
 
-```
+
 std::cout << matrix << std::endl;
 std::cout << "\nTotal: " << matrix.total() << " elements";
+
 
 >    |4.2, 11.1, 2.1|
 >    |0, 1, -3.33|
 >
 >    Total: 6 elements
-```
 
-### Spans
-
-Span objects let define views across intervals for each dimension of the container.
-
-```c++
-DDVector<3, short> view3DVector = d3Vector(Span(1), Span::all(), Span(0,1));
 
 std::cout << view3DVector << std::endl;
-```
+std::cout <<"\nTotal: " << view3DVector.total() << " elements";
 
-```
+
 >    DVector<3>{
 >    |8, 9|
 >    |10, 11|
 >    }
+>
+>    Total: 4 elements
 ```
 
 ## Documentation
