@@ -7,6 +7,8 @@
 #include <numeric>
 #include <iostream>
 
+#include "Span/Span.hpp"
+
 
 /***
  * @brief Represent a vector with a fixed dimension
@@ -137,6 +139,27 @@ public:
         return this->at(index);
     }
 
+
+    /***
+     * @brief View specific intervals of the vector using Span objects for each dimension
+     * @param span First Span object to dereference, corresponding to the higher dimension
+     * @param spans Parameter pack of following Span object
+     * @return DVector containing copies of elements represented by the given Span objects
+     * @see Span
+     * @see SpanWrapper
+     */
+    template<typename J, typename... K>
+    DVector<D,T> operator()(J span, K... spans) const
+    requires (sizeof...(K) == D-1) && std::is_convertible_v<J,Span> && (std::is_convertible_v<K,Span> && ...)
+    {
+        std::size_t from = span.isAll ? 0 : span.from,
+                to   = span.isAll ? this->size()-1 : span.to;
+        DVector<D,T> dVector (to - from + 1);
+        for(std::size_t i = from, j = 0; i <= to; ++i)
+            dVector.at(j++) = std::move(this->at(i)(spans...));
+        return dVector;
+    }
+
     /***
      * @return Return total amount of elements stored
      */
@@ -204,6 +227,22 @@ public:
      */
     const T& operator()(std::size_t index) const {
         return this->at(index);
+    }
+
+    /***
+     * @brief View a sub-vector corresponding to a given interval
+     * @param span Span object describing an interval of elements
+     * @return DVector containing copies of the values spanned
+     * @see Span
+     * @see SpanWrapper
+     */
+    DVector<1,T> operator()(Span span) const {
+        if(span.isAll)
+            return *this;
+        if(span.from >= this->size())
+            return {};
+        auto to = span.to >= this->size() ? this->size()-1 : span.to;
+        return {this->begin() + span.from, this->end() - this->size() + to + 1 };
     }
 
     /***

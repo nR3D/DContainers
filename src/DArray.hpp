@@ -4,6 +4,7 @@
 
 #include <array>
 #include <iostream>
+#include "Span/DSpan.hpp"
 
 /***
  * @brief Represent an array with a fixed size for each dimension
@@ -32,6 +33,11 @@ private:
     template<typename U, std::size_t ...I>
     constexpr std::array<U, N> array_initializer_extractor(const U* const data, std::index_sequence<I...>) {
         return { data[I]... };
+    }
+
+    template<std::size_t M, std::size_t ...P>
+    static constexpr DArray<T, M, P...> fromArray(std::array<DArray<T, P...>, M>&& array) {
+        return DArray<T,M,P...>(std::forward<decltype(array)>(array));
     }
 
 protected:
@@ -103,6 +109,19 @@ public:
     DArray(std::initializer_list<DArray<T, O...>> values)
         : std::array<DArray<T, O...>, N>(array_initializer(values)) {}
 
+
+    /***
+     * @brief Construct DArray as copy of a std::array
+     * @param array Array to be copied
+     */
+    DArray(const std::array<DArray<T, O...>, N>& array) : std::array<DArray<T, O...>, N>(array) {}
+
+    /***
+     * @brief Construct DArray moving r-value std::array
+     * @param array Array to be moved
+     */
+    DArray(std::array<DArray<T, O...>, N>&& array) : std::array<DArray<T, O...>, N>(std::move(array)) {}
+
     /***
      * @brief Get a reference to a specific element held by DArray, specifying its position.
      * @param index Index of the higher (i.e. left-most) dimension
@@ -173,6 +192,84 @@ public:
     }
 
     /***
+     * @brief Empty dereference
+     * @return Same DArray from which it's invoked
+     */
+    DArray<T,N,O...>& operator()() const {
+        return *this;
+    }
+
+    /***
+     * @brief View sub-array corresponding to intervals given by DSpan objects,
+     *        specialization with the first span being a full span (i.e. DSpan<SpanSize::All>)
+     * @param span First DSpan object which represents an interval for the higher (i.e. left-most) dimension
+     * @param spans Parameter pack of subsequent DSpan objects for lower dimensions
+     * @return DArray containing copies of the elements spanned,
+     *         dimension of the DArray returned corresponds to the size (i.e. length) of each DSpan
+     */
+    template<typename... U>
+    decltype(auto) operator()(DSpan<SpanSize::All> span, U... spans) const
+    requires (sizeof...(U) == sizeof...(O)) {
+        return operator()(DSpan<SpanSize::Interval<0,N-1>>(), spans...);
+    }
+
+    /***
+     * @brief View sub-array corresponding to intervals given by DSpan objects,
+     *        specialization with the first span being across a single element (i.e. DSpan<SpanSize::Index<Value>>)
+     * @tparam Value Index of the element spanned
+     * @param span First DSpan object which represents an interval for the higher (i.e. left-most) dimension
+     * @param spans Parameter pack of subsequent DSpan objects for lower dimensions
+     * @return DArray containing copies of the elements spanned,
+     *         dimension of the DArray returned corresponds to the size (i.e. length) of each DSpan
+     */
+    template<std::size_t Value, typename... U>
+    decltype(auto) operator()(DSpan<SpanSize::Index<Value>> span, U... spans) const
+    requires (sizeof...(U) == sizeof...(O) && Value < N) {
+        std::array<decltype(this->at(Value)(spans...)), 1> data = { this->at(Value)(spans...) };
+        return fromArray(std::move(data));
+    }
+
+    /***
+     * @brief View sub-array corresponding to intervals given by DSpan objects,
+     *        specialization with the first span being an interval between two indices
+     *        (i.e. DSpan<SpanSize::Interval<From, To>>)
+     * @tparam From Index of the first element spanned
+     * @tparam To Index of the last element spanned (included)
+     * @param span First DSpan object which represents an interval for the higher (i.e. left-most) dimension
+     * @param spans Parameter pack of subsequent DSpan objects for lower dimensions
+     * @return DArray containing copies of the elements spanned,
+     *         dimension of the DArray returned corresponds to the size (i.e. length) of each DSpan
+     */
+    template<std::size_t From, std::size_t To, typename... U>
+    decltype(auto) operator()(DSpan<SpanSize::Interval<From, To>> span, U... spans) const
+    requires (sizeof...(U) == sizeof...(O) && From < N && To < N) {
+        std::array<decltype(this->at(0)(spans...)), To - From + 1> data;
+        auto j = 0;
+        for(auto i = From; i <= To; ++i)
+            data.at(j++) = this->at(i)(spans...);
+        return fromArray(std::move(data));
+    }
+
+    /***
+     * @brief View sub-array corresponding to intervals given by DSpan objects,
+     *        specialization with the first span being an interval of fixed size (i.e. DSpan<SpanSize::Interval<Size>>)
+     * @tparam Size Number of elements spanned
+     * @param span First DSpan object which represents an interval for the higher (i.e. left-most) dimension
+     * @param spans Parameter pack of subsequent DSpan objects for lower dimensions
+     * @return DArray containing copies of the elements spanned,
+     *         dimension of the DArray returned corresponds to the size (i.e. length) of each DSpan
+     */
+    template<std::size_t Size, typename... U>
+    decltype(auto) operator()(DSpan<SpanSize::Interval<Size>> span, U... spans) const
+    requires (sizeof...(U) == sizeof...(O) && Size <= N) {
+        std::array<decltype(this->at(0)(spans...)), Size> data;
+        auto j = 0;
+        for(auto i = span.from; i <= span.to; ++i)
+            data.at(j++) = this->at(i)(spans...);
+        return fromArray(std::move(data));
+    }
+
+    /***
      * @return Return total amount of elements stored
      */
     constexpr std::size_t total() const noexcept {
@@ -236,6 +333,18 @@ public:
     requires (std::is_convertible_v<U,T> && ...) : std::array<T, N>({values...}) {}
 
     /***
+     * @brief Construct DArray as copy of a std::array
+     * @param array Array to be copied
+     */
+    DArray(const std::array<T,N>& array) : std::array<T,N>(array) {}
+
+    /***
+     * @brief Construct DArray moving r-value std::array
+     * @param array Array to be moved
+     */
+    DArray(std::array<T,N>&& array) : std::array<T,N>(std::move(array)) {}
+
+    /***
      * @brief Get reference of element at given position
      * @param index Position of the element
      * @return Reference to the requested element
@@ -250,6 +359,77 @@ public:
      */
     T operator()(std::size_t index) const {
         return this->at(index);
+    }
+
+    /***
+     * @brief Empty dereference
+     * @return Same DArray from which it's invoked
+     */
+    DArray<T,N>& operator()() const {
+        return *this;
+    }
+
+    /***
+     * @brief View sub-array corresponding to a span interval,
+     *        specialization with the interval being a full span (i.e. DSpan<SpanSize::All>)
+     * @param span Span object describing an interval of elements
+     * @return DArray containing copies of the elements spanned,
+     *         dimension of the DArray returned corresponds to the size (i.e. length) of the span
+     */
+    DArray<T, N> operator()(const DSpan<SpanSize::All> span) const
+    {
+        return *this;
+    }
+
+    /***
+     * @brief View sub-array corresponding to a span interval,
+     *        specialization with the interval being across a single element (i.e. DSpan<SpanSize::Index<Value>>)
+     * @tparam Value Index of the element spanned
+     * @param span Span object describing an interval of elements
+     * @return DArray containing copies of the elements spanned,
+     *         dimension of the DArray returned corresponds to the size (i.e. length) of the span
+     */
+    template<std::size_t Value>
+    DArray<T, 1> operator()(const DSpan<SpanSize::Index<Value>> span) const {
+        return { this->at(Value) };
+    }
+
+    /***
+     * @brief View sub-array corresponding to a span interval,
+     *        specialization with the interval being an interval between two indices
+     *        (i.e. DSpan<SpanSize::Interval<From, To>>)
+     * @tparam From Index of the first element spanned
+     * @tparam To Index of the last element spanned (included)
+     * @param span Span object describing an interval of elements
+     * @return DArray containing copies of the elements spanned,
+     *         dimension of the DArray returned corresponds to the size (i.e. length) of the span
+     */
+    template<std::size_t From, std::size_t To>
+    DArray<T, To - From + 1> operator()(const DSpan<SpanSize::Interval<From, To>> span) const
+    requires (From < N && To < N) {
+        std::array<T, To - From + 1> data;
+        auto j = 0;
+        for(auto i = From; i <= To; ++i)
+            data.at(j++) = this->at(i);
+        return data;
+    }
+
+    /***
+     * @brief View sub-array corresponding to a span interval,
+     *        specialization with the interval being an interval of fixed size (i.e. DSpan<SpanSize::Interval<Size>>)
+     * @tparam Size Number of elements spanned
+     * @param span Span object describing an interval of elements
+     * @return DArray containing copies of the elements spanned,
+     *         dimension of the DArray returned corresponds to the size (i.e. length) of the span
+     */
+    template<std::size_t Size>
+    DArray<T, Size> operator()(const DSpan<SpanSize::Interval<Size>> span) const
+    requires (Size <= N) {
+        std::array<T, Size> data;
+        auto j = 0;
+        for(auto i = span.from; i <= span.to; ++i)
+            data.at(j++) = this->at(i);
+        return data;
     }
 
     /***

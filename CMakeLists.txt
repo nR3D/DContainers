@@ -3,7 +3,13 @@ project(DContainers)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(DContainers src/DVector.hpp src/DArray.hpp)
+add_executable(DContainers
+        src/DVector.hpp
+        src/DArray.hpp
+        src/Span/Span.hpp
+        src/Span/DSpan.hpp
+        src/Span/SpanWrapper.hpp
+        )
 
 # TESTING
 
@@ -26,7 +32,10 @@ add_executable(
         src/DVector.hpp
         src/DArray.hpp
         tests/DVector_tests.cpp
-        tests/DArray_tests.cpp)
+        tests/DArray_tests.cpp
+        tests/Span/Span_tests.cpp
+        tests/Span/DSpan_tests.cpp
+        tests/Span/SpanWrapper_tests.cpp)
 target_link_libraries(
         unit_tests
         gtest_main
