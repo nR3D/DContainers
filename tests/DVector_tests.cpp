@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 #include "../src/DVector.hpp"
+#include "../src/Span/Span.hpp"
+#include "../src/Span/SpanWrapper.hpp"
 
 #include <complex>
 #include <string>
@@ -144,4 +146,63 @@ TEST_F(DVectorTest, SubvectorRefAssignment) {
     EXPECT_EQ(subComplexTypeVector(1).second, std::complex<double>(-2,-2));
     EXPECT_EQ(complexTypeVector(0,1).first, "second key");
     EXPECT_EQ(complexTypeVector(0,1).second, std::complex<double>(-2,-2));
+}
+
+TEST_F(DVectorTest, SpanViewMethods) {
+    DVector<3, int> spanI3Vector = i3Vector(Span::all(), Span(1), Span(1,2));
+    DVector<3, int> expectedViewI3Vector = {
+            {
+                {5, 6}
+            },
+            {
+                {11, 12}
+            }
+    };
+    EXPECT_EQ(spanI3Vector, expectedViewI3Vector);
+
+    DVector<1, float> spanF1Vector = f1Vector(Span(1,2));
+    DVector<1, float> expectedViewF1Vector = {15.4, -10.9};
+    EXPECT_EQ(spanF1Vector, expectedViewF1Vector);
+
+    DVector<2, std::string> spanS2Vector = s2Vector(Span(1), Span(1));
+    DVector<2, std::string> expectedViewS2Vector = {{"1,1"}};
+    EXPECT_EQ(spanS2Vector, expectedViewS2Vector);
+}
+
+TEST_F(DVectorTest, AllSpanView) {
+    DVector<3, int> spanI3Vector = i3Vector(Span::all(), Span::all(), Span::all());
+    EXPECT_EQ(spanI3Vector, i3Vector);
+
+    DVector<1, float> spanF1Vector = f1Vector(Span::all());
+    EXPECT_EQ(spanF1Vector, f1Vector);
+
+    DVector<2, std::string> spanS2Vector = s2Vector(Span::all(), Span::all());
+    EXPECT_EQ(spanS2Vector, s2Vector);
+}
+
+TEST_F(DVectorTest, SpanWrapperView) {
+    DVector<3, int> spanI3VectorRT = i3Vector(SpanWrapper::all(), SpanWrapper::index(1), SpanWrapper::interval(1,2));
+    DVector<3, int> spanI3VectorCT = i3Vector(SpanWrapper::all(), SpanWrapper::index<1>(), SpanWrapper::interval<1,2>());
+    DVector<3, int> expectedViewI3Vector = {
+            {
+                    {5, 6}
+            },
+            {
+                    {11, 12}
+            }
+    };
+    EXPECT_EQ(spanI3VectorRT, expectedViewI3Vector);
+    EXPECT_EQ(spanI3VectorRT, spanI3VectorCT);
+
+    DVector<1, float> spanF1VectorRT = f1Vector(SpanWrapper::interval(1,2));
+    DVector<1, float> spanF1VectorCT = f1Vector(SpanWrapper::interval<1,2>());
+    DVector<1, float> expectedViewF1Vector = {15.4, -10.9};
+    EXPECT_EQ(spanF1VectorRT, expectedViewF1Vector);
+    EXPECT_EQ(spanF1VectorRT, spanF1VectorCT);
+
+    DVector<2, std::string> spanS2VectorRT = s2Vector(SpanWrapper::index(1), SpanWrapper::index(1));
+    DVector<2, std::string> spanS2VectorCT = s2Vector(SpanWrapper::index<1>(), SpanWrapper::index<1>());
+    DVector<2, std::string> expectedViewS2Vector = {{"1,1"}};
+    EXPECT_EQ(spanS2VectorRT, expectedViewS2Vector);
+    EXPECT_EQ(spanS2VectorRT, spanS2VectorCT);
 }

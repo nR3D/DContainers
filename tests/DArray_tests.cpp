@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 #include "../src/DArray.hpp"
+#include "../src/Span/DSpan.hpp"
+#include "../src/Span/SpanWrapper.hpp"
 
 #include <complex>
 #include <string>
@@ -147,3 +149,42 @@ TEST_F(DArrayTest, SubvectorRefAssignment) {
     EXPECT_EQ(complexTypeArray(0,1).first, "second key");
     EXPECT_EQ(complexTypeArray(0,1).second, std::complex<double>(-2,-2));
 }
+
+TEST_F(DArrayTest, SpanViewMethods) {
+    DArray<int, 2, 1, 2> spanI3Array = i3Array(DSpan<SpanSize::All>(), DSpan<SpanSize::Index<1>>(), DSpan<SpanSize::Interval<1,2>>());
+    DArray<int, 2, 1, 2> spanI3ArrayWrap = i3Array(SpanWrapper::all(), SpanWrapper::index<1>(), SpanWrapper::interval<2>(1,2));
+    DArray<int, 2, 1, 2> expectedViewI3Array = {
+            {
+                    {5, 6}
+            },
+            {
+                    {11, 12}
+            }
+    };
+    EXPECT_EQ(spanI3Array, expectedViewI3Array);
+    EXPECT_EQ(spanI3Array, spanI3ArrayWrap);
+
+    DArray<float, 2> spanF1Array = f1Array(DSpan<SpanSize::Interval<2>>(1,2));
+    DArray<float, 2> spanF1ArrayWrap = f1Array(SpanWrapper::interval<1,2>());
+    DArray<float, 2> expectedViewF1Array = {15.4f, -10.9f};
+    EXPECT_EQ(spanF1Array, expectedViewF1Array);
+    EXPECT_EQ(spanF1Array, spanF1ArrayWrap);
+
+    DArray<std::string, 1, 1> spanS2Array = s2Array(DSpan<SpanSize::Index<1>>(), DSpan<SpanSize::Index<1>>());
+    DArray<std::string, 1, 1> spanS2ArrayWrap = s2Array(SpanWrapper::index<1>(), SpanWrapper::index<1>());
+    DArray<std::string, 1, 1> expectedViewS2Array = {{"1,1"}};
+    EXPECT_EQ(spanS2Array, expectedViewS2Array);
+    EXPECT_EQ(spanS2Array, spanS2ArrayWrap);
+}
+
+TEST_F(DArrayTest, AllSpanView) {
+    auto spanI3Array = i3Array(DSpan<SpanSize::All>(), DSpan<SpanSize::All>(), DSpan<SpanSize::All>());
+    EXPECT_EQ(spanI3Array, i3Array);
+
+    auto spanF1Array = f1Array(DSpan<SpanSize::All>());
+    EXPECT_EQ(spanF1Array, f1Array);
+
+    auto spanS2Array = s2Array(DSpan<SpanSize::All>(), DSpan<SpanSize::All>());
+    EXPECT_EQ(spanS2Array, s2Array);
+}
+
