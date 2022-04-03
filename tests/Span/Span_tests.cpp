@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../src/Span/Span.hpp"
+#include "../../src/Span/Span.hpp"
 
 class SpanTest : public ::testing::Test {
 protected:

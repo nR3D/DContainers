@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../src/Span/SpanWrapper.hpp"
+#include "../../src/Span/SpanWrapper.hpp"
 
 TEST(SpanWrapperTest, EqualityAllCheck) {
     EXPECT_EQ(SpanWrapper::all(), Span::all());
