@@ -210,7 +210,7 @@ public:
      */
     template<typename... U>
     decltype(auto) operator()(DSpan<SpanSize::All> span, U... spans) const
-    requires (sizeof...(U) <= sizeof...(O)) {
+    requires (sizeof...(U) == sizeof...(O)) {
         return operator()(DSpan<SpanSize::Interval<0,N-1>>(), spans...);
     }
 
@@ -225,7 +225,7 @@ public:
      */
     template<std::size_t Value, typename... U>
     decltype(auto) operator()(DSpan<SpanSize::Index<Value>> span, U... spans) const
-    requires (sizeof...(U) <= sizeof...(O) && Value < N) {
+    requires (sizeof...(U) == sizeof...(O) && Value < N) {
         std::array<decltype(this->at(Value)(spans...)), 1> data = { this->at(Value)(spans...) };
         return fromArray(std::move(data));
     }
@@ -243,7 +243,7 @@ public:
      */
     template<std::size_t From, std::size_t To, typename... U>
     decltype(auto) operator()(DSpan<SpanSize::Interval<From, To>> span, U... spans) const
-    requires (sizeof...(U) <= sizeof...(O) && From < N && To < N) {
+    requires (sizeof...(U) == sizeof...(O) && From < N && To < N) {
         std::array<decltype(this->at(0)(spans...)), To - From + 1> data;
         auto j = 0;
         for(auto i = From; i <= To; ++i)
@@ -262,7 +262,7 @@ public:
      */
     template<std::size_t Size, typename... U>
     decltype(auto) operator()(DSpan<SpanSize::Interval<Size>> span, U... spans) const
-    requires (sizeof...(U) <= sizeof...(O) && Size <= N) {
+    requires (sizeof...(U) == sizeof...(O) && Size <= N) {
         std::array<decltype(this->at(0)(spans...)), Size> data;
         auto j = 0;
         for(auto i = span.from; i <= span.to; ++i)
