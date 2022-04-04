@@ -1,11 +1,10 @@
 #include <gtest/gtest.h>
-#include "../src/DVector.hpp"
-#include "../src/Span/Span.hpp"
-#include "../src/Span/SpanWrapper.hpp"
 
 #include <complex>
 #include <string>
 #include <utility>
+#include "DContainers/DVector.hpp"
+#include "DContainers/Span/SpanWrapper.hpp"
 
 class DVectorTest : public ::testing::Test {
 protected:

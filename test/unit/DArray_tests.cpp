@@ -1,11 +1,10 @@
 #include <gtest/gtest.h>
-#include "../src/DArray.hpp"
-#include "../src/Span/DSpan.hpp"
-#include "../src/Span/SpanWrapper.hpp"
 
 #include <complex>
 #include <string>
 #include <utility>
+#include "DContainers/DArray.hpp"
+#include "DContainers/Span/SpanWrapper.hpp"
 
 class DArrayTest : public ::testing::Test {
 protected:

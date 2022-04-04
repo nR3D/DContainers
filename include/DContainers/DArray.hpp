@@ -4,7 +4,7 @@
 
 #include <array>
 #include <iostream>
-#include "Span/DSpan.hpp"
+#include "DContainers/Span/DSpan.hpp"
 
 /***
  * @brief Represent an array with a fixed size for each dimension
