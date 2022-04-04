@@ -1,14 +1,19 @@
 cmake_minimum_required(VERSION 3.13...3.19)
-project(DContainers VERSION 0.1 LANGUAGES CXX)
+project(DContainers
+        VERSION 0.1
+        LANGUAGES CXX
+        DESCRIPTION "Multi-dimensional containers for C++"
+        HOMEPAGE_URL "https://github.com/nR3D/DContainers")
 
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 
 add_library(DContainers
-        include/DArray.hpp
-        include/DVector.hpp
-        include/Span/Span.hpp
-        include/Span/DSpan.hpp
-        include/Span/SpanWrapper.hpp
+        INTERFACE
+        include/DContainers/DArray.hpp
+        include/DContainers/DVector.hpp
+        include/DContainers/Span/Span.hpp
+        include/DContainers/Span/DSpan.hpp
+        include/DContainers/Span/SpanWrapper.hpp
         )
 
 # Add an alias so that library can be used inside the build tree, e.g. when testing
@@ -16,12 +21,12 @@ add_library(DContainers::DContainers ALIAS DContainers)
 
 #Set target properties
 target_include_directories(DContainers
-        PUBLIC
+        INTERFACE
         $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         )
 
-target_compile_features(DContainers PUBLIC cxx_std_20)
+target_compile_features(DContainers INTERFACE cxx_std_20)
 
 
 # --- Installation instructions ---
@@ -60,8 +65,8 @@ configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/DContainersConfig.
 
 # Install configuration files
 install(FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/JSONUtilsConfig.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/JSONUtilsConfigVersion.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/DContainersConfig.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/DContainersConfigVersion.cmake
         DESTINATION ${INSTALL_CONFIGDIR}
         )
 
@@ -72,7 +77,7 @@ export(EXPORT DContainers-targets
         FILE ${CMAKE_CURRENT_BINARY_DIR}/DContainersTargets.cmake
         NAMESPACE DContainers::)
 
-#Register package in the User Package Registry
+# Register package in the User Package Registry
 export(PACKAGE DContainers)
 
 

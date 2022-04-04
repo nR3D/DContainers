@@ -5,7 +5,7 @@ list(APPEND CMAKE_MODULE_PATH ${DCONTAINERS_CMAKE_DIR})
 list(REMOVE_AT CMAKE_MODULE_PATH -1)
 
 if(NOT TARGET DContainers::DContainers)
-    include("${JSONUTILS_CMAKE_DIR}/DContainersTargets.cmake")
+    include("${DCONTAINERS_CMAKE_DIR}/DContainersTargets.cmake")
 endif()
 
 set(DCONTAINERS_lIBRARIES DContainers::DContainers)
