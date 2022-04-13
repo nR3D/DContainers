@@ -1,5 +1,8 @@
 # DContainers
 
+![Build status](https://github.com/nR3D/DContainers/actions/workflows/cmake-tests.yml/badge.svg?branch=master)
+[![Documentation](https://img.shields.io/badge/docs-Doxygen-blue)](#Documentation)
+
 Easily define multi-dimensional containers at compile-time.
 
 Usually, containers of multiple dimensions are represented either as a one-dimensional container, and then accessed through arithmetic operations, or using nested containers, that will quickly bloat the corresponding typename.
