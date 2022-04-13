@@ -1,6 +1,6 @@
 # DContainers
 
-![Build status](https://github.com/nR3D/DContainers/actions/workflows/cmake-tests.yml/badge.svg?branch=master)
+[![CMake Unit Tests](https://github.com/nR3D/DContainers/actions/workflows/cmake-tests.yml/badge.svg)](https://github.com/nR3D/DContainers/actions/workflows/cmake-tests.yml)
 [![Documentation](https://img.shields.io/badge/docs-Doxygen-blue)](#Documentation)
 
 Easily define multi-dimensional containers at compile-time.
