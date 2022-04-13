@@ -28,10 +28,9 @@ endif()
 add_executable(DContainers_test
         unit/DArray_tests.cpp
         unit/DVector_tests.cpp
-        unit/Span/Span_tests.cpp
-        unit/Span/DSpan_tests.cpp
-        unit/Span/SpanWrapper_tests.cpp
-        )
+        unit/Span/Spanning_tests.cpp
+        unit/Span/DSpanning_tests.cpp
+        unit/Span_tests.cpp)
 
 target_compile_features(DContainers_test PRIVATE cxx_std_20)
 target_link_libraries(DContainers_test gtest_main DContainers::DContainers)

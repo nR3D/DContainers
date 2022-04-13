@@ -7,7 +7,7 @@
 #include <numeric>
 #include <iostream>
 
-#include "DContainers/Span/Span.hpp"
+#include "DContainers/Span/Spanning.hpp"
 
 
 namespace mdc {
@@ -148,7 +148,7 @@ namespace mdc {
         template<typename J, typename... K>
         DVector<D, T> operator()(J span, K... spans) const
         requires (sizeof...(K) == D - 1)
-                 && std::is_convertible_v<J, mdc::Span> && (std::is_convertible_v<K, mdc::Span> && ...) {
+                 && std::is_convertible_v<J, mdc::Spanning> && (std::is_convertible_v<K, mdc::Spanning> && ...) {
             std::size_t from = span.isAll ? 0 : span.from,
                     to = span.isAll ? this->size() - 1 : span.to;
             DVector<D, T> dVector(to - from + 1);
@@ -237,7 +237,7 @@ namespace mdc {
          * @see Span
          * @see SpanWrapper
          */
-        DVector<1, T> operator()(mdc::Span span) const {
+        DVector<1, T> operator()(mdc::Spanning span) const {
             if (span.isAll)
                 return *this;
             if (span.from >= this->size())

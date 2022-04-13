@@ -16,11 +16,13 @@ For instance, the above example could be written using class `DArray`, where the
 Similarly, `DVector` could be used to represent a general 2-dimensional matrix:
 - `DVector<2, double>`
 
-Some helper methods are then offered to easily fetch stored elements, like `container(1,2)`, which corresponds to `container.at(1).at(2)`, or views using `Span` objects.
+Some helper methods are then offered to easily fetch stored elements, like `container(1,2)`, which corresponds to `container.at(1).at(2)`, or views using `Span` class.
 
 ## Code examples
 
 ```c++
+using mdc::DVector, mdc::DArray, mdc::Span;
+
 // Construction
 DVector<3, short> d3Vector = {
         {
@@ -51,7 +53,8 @@ subD3Vector(1) = {24, 25, 26};
 subMatrix(2) = -3.33;
 
 // Define views on containers
-DVector<3, short> view3DVector = d3Vector(Span(1), Span::all(), Span(0,1));
+DVector<3, short> view3DVector = d3Vector(Span::of(1), Span::all(), Span::of(0,1));
+DArray<double, 2, 1> viewMatrix = matrix(Span::all(), Span::of<0>());
 ```
 
 ### Printing
@@ -91,6 +94,15 @@ std::cout <<"\nTotal: " << view3DVector.total() << " elements";
 >    }
 >
 >    Total: 4 elements
+
+std::cout << viewMatrix << std::endl;
+std::cout <<"\nTotal: " << viewMatrix.total() << " elements";
+
+
+>    |4.2|
+>    |0.0|
+>
+>    Total: 2 elements
 ```
 
 ## Documentation
@@ -156,6 +168,7 @@ C++ file:
 ```c++
 #include <DContainers/DVector.hpp>
 #include <DContainers/DArray.hpp>
+#include <DContainers/Span.hpp>
 ```
 
 

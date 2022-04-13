@@ -1,13 +1,13 @@
 #include <gtest/gtest.h>
-#include "DContainers/Span/Span.hpp"
+#include "DContainers/Span/Spanning.hpp"
 
-using mdc::Span;
+using mdc::Spanning;
 
 class SpanTest : public ::testing::Test {
 protected:
-    Span all = Span::all();
-    Span interval = Span(3,7);
-    Span index = Span(5);
+    Spanning all = Spanning::all();
+    Spanning interval = Spanning(3, 7);
+    Spanning index = Spanning(5);
 };
 
 TEST_F(SpanTest, AllCheck) {
@@ -27,8 +27,8 @@ TEST_F(SpanTest, IndexCheck) {
 }
 
 TEST_F(SpanTest, EqualityCheck) {
-    EXPECT_EQ(all, Span::all());
-    EXPECT_EQ(interval, Span(3,7));
-    EXPECT_EQ(index, Span(5));
-    EXPECT_EQ(index, Span(5,5));
+    EXPECT_EQ(all, Spanning::all());
+    EXPECT_EQ(interval, Spanning(3, 7));
+    EXPECT_EQ(index, Spanning(5));
+    EXPECT_EQ(index, Spanning(5, 5));
 }
