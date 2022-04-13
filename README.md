@@ -106,10 +106,60 @@ doxygen docs/Doxyfile
 
 Documentation will be accessible in `build/docs/html/index.html`.
 
-> Custom CSS used: [doxygen-awesome-css](https://github.com/jothepro/doxygen-awesome-css)
+## Usage
 
-## Unit testing
+### Build
 
-Unit tests are based on framework [googletest](https://github.com/google/googletest), and are located inside `tests/`.
+```shell
+cmake -B build
+cmake --build build
+```
 
-They can be run through executable `unit_tests`, created by CMake in the build directory.
+### Install
+
+```shell
+sudo cmake --build build -- install
+```
+
+Alternatively, specify a custom installation directory:
+
+```shell
+cmake -B build -DCMAKE_INSTALL_PREFIX=<custom_install_dir>
+cmake --build build -- install
+```
+
+### Unit tests
+
+Unit tests are based on framework [googletest](https://github.com/google/googletest), and are located inside `test/unit/`.
+
+Run `test` target to execute unit tests:
+
+```shell
+cmake --build build -- test
+```
+
+### Uninstall
+
+```shell
+xargs rm < build/install_manifest.txt
+```
+
+### Include inside your project
+
+`CMakeLists.txt`:
+```cmake
+find_package(DContainers 0.1 REQUIRED)
+target_link_libraries(yourTarget DContainers::DContainers)
+```
+
+C++ file:
+```c++
+#include <DContainers/DVector.hpp>
+#include <DContainers/DArray.hpp>
+```
+
+
+## Acknowledgments
+
+- Custom Doxygen CSS: [doxygen-awesome-css](https://github.com/jothepro/doxygen-awesome-css)
+- CMake best practices: [It's Time To Do CMake Right](https://pabloariasal.github.io/2018/02/19/its-time-to-do-cmake-right/)

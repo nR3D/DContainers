@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../../src/Span/DSpan.hpp"
+#include "DContainers/Span/DSpan.hpp"
 
 class DSpanTest : public ::testing::Test {
 protected:

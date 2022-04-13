@@ -1,0 +1,11 @@
+get_filename_component(DCONTAINERS_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+include(CMakeFindDependencyMacro)
+
+list(APPEND CMAKE_MODULE_PATH ${DCONTAINERS_CMAKE_DIR})
+list(REMOVE_AT CMAKE_MODULE_PATH -1)
+
+if(NOT TARGET DContainers::DContainers)
+    include("${DCONTAINERS_CMAKE_DIR}/DContainersTargets.cmake")
+endif()
+
+set(DCONTAINERS_lIBRARIES DContainers::DContainers)
