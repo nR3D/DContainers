@@ -179,7 +179,7 @@ html {
     html:not(.light-mode) {
         color-scheme: dark;
 
-        --primary-color: #1982d2;
+        --primary-color: #58a6ff;
         --primary-dark-color: #86a9c4;
         --primary-light-color: #4779ac;
 
@@ -189,17 +189,17 @@ html {
 
         --menu-selected-background: rgba(0,0,0,.4);
 
-        --page-background-color: #1C1D1F;
+        --page-background-color: #0d1117;
         --page-foreground-color: #d2dbde;
         --page-secondary-foreground-color: #859399;
         --separator-color: #38393b;
-        --side-nav-background: #252628;
+        --side-nav-background: #161b22;
 
-        --code-background: #2a2c2f;
+        --code-background: #161b22;
 
-        --tablehead-background: #2a2c2f;
+        --tablehead-background: #161b22;
     
-        --blockquote-background: #222325;
+        --blockquote-background: #161b22;
         --blockquote-foreground: #7e8c92;
 
         --warning-color: #2e1917;
@@ -221,7 +221,7 @@ html {
         --invariant-color-dark: #76ce96;
         --invariant-color-darker: #cceed5;
 
-        --fragment-background: #282c34;
+        --fragment-background: #161b22;
         --fragment-foreground: #dbe4eb;
         --fragment-keyword: #cc99cd;
         --fragment-keywordtype: #ab99cd;
@@ -240,27 +240,27 @@ html {
 html.dark-mode {
     color-scheme: dark;
 
-    --primary-color: #1982d2;
+    --primary-color: #58a6ff;
     --primary-dark-color: #86a9c4;
     --primary-light-color: #4779ac;
 
-    --box-shadow: 0 2px 8px 0 rgba(0,0,0,.30);
+    --box-shadow: 0 2px 8px 0 rgba(0,0,0,.35);
 
     --odd-color: rgba(100,100,100,.06);
 
     --menu-selected-background: rgba(0,0,0,.4);
 
-    --page-background-color: #1C1D1F;
+    --page-background-color: #0d1117;
     --page-foreground-color: #d2dbde;
     --page-secondary-foreground-color: #859399;
     --separator-color: #38393b;
-    --side-nav-background: #252628;
+    --side-nav-background: #161b22;
 
-    --code-background: #2a2c2f;
+    --code-background: #161b22;
 
-    --tablehead-background: #2a2c2f;
+    --tablehead-background: #161b22;
 
-    --blockquote-background: #222325;
+    --blockquote-background: #161b22;
     --blockquote-foreground: #7e8c92;
 
     --warning-color: #2e1917;
@@ -282,7 +282,7 @@ html.dark-mode {
     --invariant-color-dark: #76ce96;
     --invariant-color-darker: #cceed5;
 
-    --fragment-background: #282c34;
+    --fragment-background: #161b22;
     --fragment-foreground: #dbe4eb;
     --fragment-keyword: #cc99cd;
     --fragment-keywordtype: #ab99cd;
