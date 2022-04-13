@@ -8,7 +8,7 @@ For example, a 3x3 matrix could be expressed by one of the following types:
 - `std::array<double, 9>`
 - `std::array<std::array<double, 3>, 3>`
 
-DContainers generalize the last approach, giving a shorthand way to write recursive containers.
+This library generalizes the last approach, giving a shorthand way to write recursive containers.
 
 For instance, the above example could be written using class `DArray`, where the size of each dimension is expressed in its type:
 - `DArray<double, 3, 3>`
@@ -34,7 +34,7 @@ DVector<3, short> d3Vector = {
 };
 
 DArray<double, 2, 3> matrix = {
-        {4.2, 11, -1.5},
+        {4.2, 11.0, -1.5},
         {0.0, 1.0, 3.33}
 };
 
@@ -141,7 +141,7 @@ cmake --build build -- test
 ### Uninstall
 
 ```shell
-xargs rm < build/install_manifest.txt
+sudo xargs rm < build/install_manifest.txt
 ```
 
 ### Include inside your project
