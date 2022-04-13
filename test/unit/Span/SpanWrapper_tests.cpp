@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include "DContainers/Span/SpanWrapper.hpp"
 
+using mdc::Span, mdc::DSpan, mdc::SpanWrapper, mdc::SpanSize;
+
 TEST(SpanWrapperTest, EqualityAllCheck) {
     EXPECT_EQ(SpanWrapper::all(), Span::all());
     EXPECT_EQ(SpanWrapper::all(), DSpan<SpanSize::All>{});
