@@ -4,9 +4,9 @@
 #include <string>
 #include <utility>
 #include "DContainers/DArray.hpp"
-#include "DContainers/Span/SpanWrapper.hpp"
+#include "DContainers/Span.hpp"
 
-using mdc::DArray, mdc::DSpan, mdc::SpanSize, mdc::SpanWrapper;
+using mdc::DArray, mdc::DSpanning, mdc::SpanSize, mdc::Span;
 
 class DArrayTest : public ::testing::Test {
 protected:
@@ -152,8 +152,8 @@ TEST_F(DArrayTest, SubvectorRefAssignment) {
 }
 
 TEST_F(DArrayTest, SpanViewMethods) {
-    DArray<int, 2, 1, 2> spanI3Array = i3Array(DSpan<SpanSize::All>(), DSpan<SpanSize::Index<1>>(), DSpan<SpanSize::Interval<1,2>>());
-    DArray<int, 2, 1, 2> spanI3ArrayWrap = i3Array(SpanWrapper::all(), SpanWrapper::index<1>(), SpanWrapper::interval<2>(1,2));
+    DArray<int, 2, 1, 2> spanI3Array = i3Array(DSpanning<SpanSize::All>(), DSpanning<SpanSize::Index<1>>(), DSpanning<SpanSize::Interval<1,2>>());
+    DArray<int, 2, 1, 2> spanI3ArrayWrap = i3Array(Span::all(), Span::of<1>(), Span::of<2>(1, 2));
     DArray<int, 2, 1, 2> expectedViewI3Array = {
             {
                     {5, 6}
@@ -165,27 +165,41 @@ TEST_F(DArrayTest, SpanViewMethods) {
     EXPECT_EQ(spanI3Array, expectedViewI3Array);
     EXPECT_EQ(spanI3Array, spanI3ArrayWrap);
 
-    DArray<float, 2> spanF1Array = f1Array(DSpan<SpanSize::Interval<2>>(1,2));
-    DArray<float, 2> spanF1ArrayWrap = f1Array(SpanWrapper::interval<1,2>());
+    DArray<float, 2> spanF1Array = f1Array(DSpanning<SpanSize::Interval<2>>(1, 2));
+    DArray<float, 2> spanF1ArrayWrap = f1Array(Span::of<1,2>());
     DArray<float, 2> expectedViewF1Array = {15.4f, -10.9f};
     EXPECT_EQ(spanF1Array, expectedViewF1Array);
     EXPECT_EQ(spanF1Array, spanF1ArrayWrap);
 
-    DArray<std::string, 1, 1> spanS2Array = s2Array(DSpan<SpanSize::Index<1>>(), DSpan<SpanSize::Index<1>>());
-    DArray<std::string, 1, 1> spanS2ArrayWrap = s2Array(SpanWrapper::index<1>(), SpanWrapper::index<1>());
+    DArray<std::string, 1, 1> spanS2Array = s2Array(DSpanning<SpanSize::Index<1>>(), DSpanning<SpanSize::Index<1>>());
+    DArray<std::string, 1, 1> spanS2ArrayWrap = s2Array(Span::of<1>(), Span::of<1>());
     DArray<std::string, 1, 1> expectedViewS2Array = {{"1,1"}};
     EXPECT_EQ(spanS2Array, expectedViewS2Array);
     EXPECT_EQ(spanS2Array, spanS2ArrayWrap);
 }
 
 TEST_F(DArrayTest, AllSpanView) {
-    auto spanI3Array = i3Array(DSpan<SpanSize::All>(), DSpan<SpanSize::All>(), DSpan<SpanSize::All>());
+    auto spanI3Array = i3Array(DSpanning<SpanSize::All>(), DSpanning<SpanSize::All>(), DSpanning<SpanSize::All>());
     EXPECT_EQ(spanI3Array, i3Array);
 
-    auto spanF1Array = f1Array(DSpan<SpanSize::All>());
+    auto spanF1Array = f1Array(DSpanning<SpanSize::All>());
     EXPECT_EQ(spanF1Array, f1Array);
 
-    auto spanS2Array = s2Array(DSpan<SpanSize::All>(), DSpan<SpanSize::All>());
+    auto spanS2Array = s2Array(DSpanning<SpanSize::All>(), DSpanning<SpanSize::All>());
     EXPECT_EQ(spanS2Array, s2Array);
 }
 
+
+TEST_F(DArrayTest, ReadMeTest) {
+    DArray<double, 2, 3> matrix = {
+            {4.2, 11., -1.5},
+            {0.0, 1.0, 3.33}
+    };
+    matrix(0,2) = 2.1;
+    DArray<double, 3>& subMatrix = matrix(1);
+    subMatrix(2) = -3.33;
+    auto viewMatrix = matrix(Span::all(), Span::of<0>());
+    DArray<double, 2, 1> testView = {{4.2},{0.0}};
+    EXPECT_EQ(viewMatrix, testView);
+    EXPECT_EQ(viewMatrix.total(),2);
+}

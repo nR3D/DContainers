@@ -1,5 +1,5 @@
-#ifndef DCONTAINERS_SPAN_HPP
-#define DCONTAINERS_SPAN_HPP
+#ifndef DCONTAINERS_SPANNING_HPP
+#define DCONTAINERS_SPANNING_HPP
 
 #include <cstddef>
 
@@ -11,9 +11,9 @@ namespace mdc {
      * @note Span is a structural type
      * @warning Span is not default constructible
      */
-    struct Span {
+    struct Spanning {
     private:
-        constexpr Span() : from(0), to(0), isAll(true) {}
+        constexpr Spanning() : from(0), to(0), isAll(true) {}
 
     public:
         /***
@@ -37,18 +37,18 @@ namespace mdc {
          * @param _from starting index (included)
          * @param _to final index (included, not past-the-end)
          */
-        constexpr Span(std::size_t _from, std::size_t _to) : from(_from), to(_to), isAll(false) {}
+        constexpr Spanning(std::size_t _from, std::size_t _to) : from(_from), to(_to), isAll(false) {}
 
         /***
          * @brief Construct a Span object representing a single index, equals to Span(value, value)
          * @param value index
          */
-        explicit constexpr Span(std::size_t value) : from(value), to(value), isAll(false) {}
+        explicit constexpr Spanning(std::size_t value) : from(value), to(value), isAll(false) {}
 
         /***
          * @return true iff the two spans are both all or from and to values are respectively equal
          */
-        constexpr bool operator==(const Span &other) const {
+        constexpr bool operator==(const Spanning &other) const {
             if (isAll && other.isAll)
                 return true;
             if (from == other.from && to == other.to)
@@ -59,11 +59,11 @@ namespace mdc {
         /***
          * @return Span object representing a full span across the entire domain
          */
-        static constexpr Span all() {
-            return Span{};
+        static constexpr Spanning all() {
+            return Spanning{};
         }
     };
 
 }
 
-#endif //DCONTAINERS_SPAN_HPP
+#endif //DCONTAINERS_SPANNING_HPP

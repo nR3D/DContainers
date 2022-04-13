@@ -11,10 +11,9 @@ add_library(DContainers
         INTERFACE
         include/DContainers/DArray.hpp
         include/DContainers/DVector.hpp
-        include/DContainers/Span/Span.hpp
-        include/DContainers/Span/DSpan.hpp
-        include/DContainers/Span/SpanWrapper.hpp
-        )
+        include/DContainers/Span/Spanning.hpp
+        include/DContainers/Span/DSpanning.hpp
+        include/DContainers/Span.hpp)
 
 # Add an alias so that library can be used inside the build tree, e.g. when testing
 add_library(DContainers::DContainers ALIAS DContainers)

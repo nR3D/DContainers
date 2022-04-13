@@ -4,7 +4,7 @@
 
 #include <array>
 #include <iostream>
-#include "DContainers/Span/DSpan.hpp"
+#include "DContainers/Span/DSpanning.hpp"
 
 namespace mdc {
 
@@ -208,8 +208,8 @@ namespace mdc {
          *         dimension of the DArray returned corresponds to the size (i.e. length) of each DSpan
          */
         template<typename... U>
-        decltype(auto) operator()(mdc::DSpan<mdc::SpanSize::All> span, U... spans) const requires (sizeof...(U) == sizeof...(O)) {
-            return operator()(mdc::DSpan<mdc::SpanSize::Interval<0, N - 1>>(), spans...);
+        decltype(auto) operator()(mdc::DSpanning<mdc::SpanSize::All> span, U... spans) const requires (sizeof...(U) == sizeof...(O)) {
+            return operator()(mdc::DSpanning<mdc::SpanSize::Interval<0, N - 1>>(), spans...);
         }
 
         /***
@@ -223,7 +223,7 @@ namespace mdc {
          */
         template<std::size_t Value, typename... U>
         decltype(auto)
-        operator()(mdc::DSpan<mdc::SpanSize::Index<Value>> span, U... spans) const requires (sizeof...(U) == sizeof...(O) &&
+        operator()(mdc::DSpanning<mdc::SpanSize::Index<Value>> span, U... spans) const requires (sizeof...(U) == sizeof...(O) &&
                                                                                    Value < N) {
             std::array<decltype(this->at(Value)(spans...)), 1> data = {this->at(Value)(spans...)};
             return fromArray(std::move(data));
@@ -242,7 +242,7 @@ namespace mdc {
          */
         template<std::size_t From, std::size_t To, typename... U>
         decltype(auto)
-        operator()(mdc::DSpan<mdc::SpanSize::Interval<From, To>> span, U... spans) const requires (sizeof...(U) == sizeof...(O) &&
+        operator()(mdc::DSpanning<mdc::SpanSize::Interval<From, To>> span, U... spans) const requires (sizeof...(U) == sizeof...(O) &&
                                                                                          From < N && To < N) {
             std::array<decltype(this->at(0)(spans...)), To - From + 1> data;
             auto j = 0;
@@ -262,7 +262,7 @@ namespace mdc {
          */
         template<std::size_t Size, typename... U>
         decltype(auto)
-        operator()(mdc::DSpan<mdc::SpanSize::Interval<Size>> span, U... spans) const requires (sizeof...(U) == sizeof...(O) &&
+        operator()(mdc::DSpanning<mdc::SpanSize::Interval<Size>> span, U... spans) const requires (sizeof...(U) == sizeof...(O) &&
                                                                                      Size <= N) {
             std::array<decltype(this->at(0)(spans...)), Size> data;
             auto j = 0;
@@ -382,7 +382,7 @@ namespace mdc {
          * @return DArray containing copies of the elements spanned,
          *         dimension of the DArray returned corresponds to the size (i.e. length) of the span
          */
-        DArray<T, N> operator()(const mdc::DSpan<mdc::SpanSize::All> span) const {
+        DArray<T, N> operator()(const mdc::DSpanning<mdc::SpanSize::All> span) const {
             return *this;
         }
 
@@ -395,7 +395,7 @@ namespace mdc {
          *         dimension of the DArray returned corresponds to the size (i.e. length) of the span
          */
         template<std::size_t Value>
-        DArray<T, 1> operator()(const mdc::DSpan<mdc::SpanSize::Index<Value>> span) const {
+        DArray<T, 1> operator()(const mdc::DSpanning<mdc::SpanSize::Index<Value>> span) const {
             return {this->at(Value)};
         }
 
@@ -411,7 +411,7 @@ namespace mdc {
          */
         template<std::size_t From, std::size_t To>
         DArray<T, To - From + 1>
-        operator()(const mdc::DSpan<mdc::SpanSize::Interval<From, To>> span) const requires (From < N && To < N) {
+        operator()(const mdc::DSpanning<mdc::SpanSize::Interval<From, To>> span) const requires (From < N && To < N) {
             std::array<T, To - From + 1> data;
             auto j = 0;
             for (auto i = From; i <= To; ++i)
@@ -428,7 +428,7 @@ namespace mdc {
          *         dimension of the DArray returned corresponds to the size (i.e. length) of the span
          */
         template<std::size_t Size>
-        DArray<T, Size> operator()(const mdc::DSpan<mdc::SpanSize::Interval<Size>> span) const requires (Size <= N) {
+        DArray<T, Size> operator()(const mdc::DSpanning<mdc::SpanSize::Interval<Size>> span) const requires (Size <= N) {
             std::array<T, Size> data;
             auto j = 0;
             for (auto i = span.from; i <= span.to; ++i)

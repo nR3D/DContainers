@@ -1,7 +1,7 @@
-#ifndef DCONTAINERS_DSPAN_HPP
-#define DCONTAINERS_DSPAN_HPP
+#ifndef DCONTAINERS_DSPANNING_HPP
+#define DCONTAINERS_DSPANNING_HPP
 
-#include "Span.hpp"
+#include "Spanning.hpp"
 
 namespace mdc {
 
@@ -58,7 +58,7 @@ namespace mdc {
      * @tparam S SpanSize class indicating length or position of the span
      */
     template<typename S> requires (std::derived_from<S, SpanSize::Size> && !std::same_as<S, SpanSize::Size>)
-    class DSpan : public mdc::Span {
+    class DSpanning : public mdc::Spanning {
     };
 
     /***
@@ -66,9 +66,9 @@ namespace mdc {
      * @see SpanSize::All
      */
     template<>
-    class DSpan<SpanSize::All> : public mdc::Span {
+    class DSpanning<SpanSize::All> : public mdc::Spanning {
     public:
-        constexpr DSpan() : mdc::Span(mdc::Span::all()) {};
+        constexpr DSpanning() : mdc::Spanning(mdc::Spanning::all()) {};
     };
 
     /***
@@ -77,9 +77,9 @@ namespace mdc {
      * @see DSpan<SpanSize::Interval<From, To>
      */
     template<std::size_t Value>
-    class DSpan<SpanSize::Index<Value>> : public mdc::Span {
+    class DSpanning<SpanSize::Index<Value>> : public mdc::Spanning {
     public:
-        explicit constexpr DSpan() : mdc::Span(Value) {}
+        explicit constexpr DSpanning() : mdc::Spanning(Value) {}
     };
 
     /***
@@ -87,9 +87,9 @@ namespace mdc {
      * @see SpanSize::Interval<From, To>
      */
     template<std::size_t From, std::size_t To>
-    class DSpan<SpanSize::Interval<From, To>> : public mdc::Span {
+    class DSpanning<SpanSize::Interval<From, To>> : public mdc::Spanning {
     public:
-        constexpr DSpan() : mdc::Span(From, To) {}
+        constexpr DSpanning() : mdc::Spanning(From, To) {}
     };
 
     /***
@@ -97,14 +97,14 @@ namespace mdc {
      * @see SpanSize::Interval<Size>
      */
     template<std::size_t Size>
-    class DSpan<SpanSize::Interval<Size>> : public mdc::Span {
+    class DSpanning<SpanSize::Interval<Size>> : public mdc::Spanning {
     public:
         /***
          * @param from First index spanned
          * @param to Last index spanned
          * @throws std::length_error When template Size and parameter size (= to - from + 1) are not equal
          */
-        constexpr DSpan(std::size_t from, std::size_t to) : mdc::Span(from, to) {
+        constexpr DSpanning(std::size_t from, std::size_t to) : mdc::Spanning(from, to) {
             if (to - from + 1 != Size)
                 throw std::length_error(
                         "Span passed as parameter (from=" + std::to_string(from) + ", to=" + std::to_string(to) + ")" +
@@ -114,4 +114,4 @@ namespace mdc {
 
 }
 
-#endif //DCONTAINERS_DSPAN_HPP
+#endif //DCONTAINERS_DSPANNING_HPP
