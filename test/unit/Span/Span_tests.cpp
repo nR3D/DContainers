@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include "DContainers/Span/Span.hpp"
 
+using mdc::Span;
+
 class SpanTest : public ::testing::Test {
 protected:
     Span all = Span::all();

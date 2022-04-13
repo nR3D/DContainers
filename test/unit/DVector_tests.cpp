@@ -6,6 +6,8 @@
 #include "DContainers/DVector.hpp"
 #include "DContainers/Span/SpanWrapper.hpp"
 
+using mdc::DVector, mdc::Span, mdc::SpanWrapper;
+
 class DVectorTest : public ::testing::Test {
 protected:
     void SetUp() override {

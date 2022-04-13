@@ -6,6 +6,8 @@
 #include "DContainers/DArray.hpp"
 #include "DContainers/Span/SpanWrapper.hpp"
 
+using mdc::DArray, mdc::DSpan, mdc::SpanSize, mdc::SpanWrapper;
+
 class DArrayTest : public ::testing::Test {
 protected:
     using complex_type = std::pair<std::string, std::complex<double>>;

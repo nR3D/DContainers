@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include "DContainers/Span/DSpan.hpp"
 
+using mdc::DSpan, mdc::SpanSize, mdc::Span;
+
 class DSpanTest : public ::testing::Test {
 protected:
     DSpan<SpanSize::All> all = DSpan<SpanSize::All>{};
