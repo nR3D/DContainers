@@ -1,0 +1,17 @@
+name: CMake Unit Tests
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build project
+        run: cmake -B build && cmake --build build
+
+      - name: Run test target
+        run: cmake --build build -- test
