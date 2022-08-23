@@ -219,3 +219,15 @@ TEST_F(DArrayTest, ReadMeTest) {
     EXPECT_EQ(viewMatrix, testView);
     EXPECT_EQ(viewMatrix.total(),2);
 }
+
+TEST_F(DArrayTest, ArrayPrinting) {
+    // suppress console output
+    auto console = std::cout.rdbuf(nullptr);
+
+    std::cout << f1Array << std::endl;
+    std::cout << d2Array << std::endl;
+    std::cout << i3Array << std::endl;
+
+    // restore console output
+    std::cout.rdbuf(console);
+}

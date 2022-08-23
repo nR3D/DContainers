@@ -223,3 +223,15 @@ TEST_F(DVectorTest, SpanWrapperView) {
     EXPECT_EQ(spanS2VectorRT, expectedViewS2Vector);
     EXPECT_EQ(spanS2VectorRT, spanS2VectorCT);
 }
+
+TEST_F(DVectorTest, VectorPrinting) {
+    // suppress console output
+    auto console = std::cout.rdbuf(nullptr);
+
+    std::cout << f1Vector << std::endl;
+    std::cout << d2Vector << std::endl;
+    std::cout << i3Vector << std::endl;
+
+    // restore console output
+    std::cout.rdbuf(console);
+}
