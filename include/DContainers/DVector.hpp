@@ -55,40 +55,6 @@ namespace mdc {
                 D - 1, T>>(alloc, DVector<D - 1, T>(next_allocs...)) {}
 
         /***
-         * @brief Print function for n-dimentional DVectors.
-         *        DVectors with an higher dimension than 2 will print their dimension and current allocation
-         *        for each dimension, while lower dimensions will resemble an handwritten matrix.
-         *        Format example:
-         * @code
-         * DVector<3>{
-         * |0.5, 0.51|
-         * |1.5, 1.51|
-         * |2.5, 2.51|,
-         *
-         * |3.5, 3.51|
-         * |3.55, 4.51|
-         * |5.5, 5.51|
-         * }
-         * @endcode
-         * @see operator<<(std::ostream &, const DVector<2,U> &)
-         * @see operator<<(std::ostream &, const DVector<1,U> &)
-         */
-        template<std::size_t M, typename U>
-        friend std::ostream &operator<<(std::ostream &, const DVector<M, U> &);
-
-        /***
-         * @brief Print function for 2-dimentional DVectors.
-         *        Format example:
-         * @code
-         * |42.0, 10.5|
-         * |5.55, 11.2|
-         * |-9.0, 0.01|
-         * @endcode
-         */
-        template<typename U>
-        friend std::ostream &operator<<(std::ostream &, const DVector<2, U> &);
-
-        /***
          * @brief Get a reference to a specific element held by DVector, specifying its position.
          * @param index Index of the higher (i.e. left-most) dimension
          * @param indices Parameter pack of the indices for the lower dimensions of the element
@@ -182,32 +148,56 @@ namespace mdc {
         }
     };
 
-};
-
-template<std::size_t D, typename T>
-std::ostream &operator<<(std::ostream &os, const mdc::DVector<D,T> &dVector) {
-    auto size = dVector.size();
-    os << "DVector<" << D << ">{\n";
-    for(std::size_t i = 0; i < size; ++i) {
-        os << dVector.at(i);
-        if(i < size-1)
-            os << ",\n\n";
+    /***
+     * @brief Print function for n-dimentional DVectors.
+     *        DVectors with an higher dimension than 2 will print their dimension and current allocation
+     *        for each dimension, while lower dimensions will resemble an handwritten matrix.
+     *        Format example:
+     * @code
+     * DVector<3>{
+     * |0.5, 0.51|
+     * |1.5, 1.51|
+     * |2.5, 2.51|,
+     *
+     * |3.5, 3.51|
+     * |3.55, 4.51|
+     * |5.5, 5.51|
+     * }
+     * @endcode
+     * @see operator<<(std::ostream &, const DVector<2,U> &)
+     * @see operator<<(std::ostream &, const DVector<1,U> &)
+     */
+    template<std::size_t D, typename T>
+    std::ostream &operator<<(std::ostream &os, const mdc::DVector<D, T> &dVector) {
+        auto size = dVector.size();
+        os << "DVector<" << D << ">{\n";
+        for (std::size_t i = 0; i < size; ++i) {
+            os << dVector.at(i);
+            if (i < size - 1)
+                os << ",\n\n";
+        }
+        return os << "\n}";
     }
-    return os << "\n}";
-}
 
-template<typename T>
-std::ostream &operator<<(std::ostream &os, const mdc::DVector<2,T> &dVector) {
-    auto size = dVector.size();
-    for(std::size_t i = 0; i < size; ++i) {
-        os << dVector.at(i);
-        if(i < size-1)
-            os << '\n';
+    /***
+     * @brief Print function for 2-dimentional DVectors.
+     *        Format example:
+     * @code
+     * |42.0, 10.5|
+     * |5.55, 11.2|
+     * |-9.0, 0.01|
+     * @endcode
+     */
+    template<typename T>
+    std::ostream &operator<<(std::ostream &os, const mdc::DVector<2, T> &dVector) {
+        auto size = dVector.size();
+        for (std::size_t i = 0; i < size; ++i) {
+            os << dVector.at(i);
+            if (i < size - 1)
+                os << '\n';
+        }
+        return os;
     }
-    return os;
-}
-
-namespace mdc {
 
 /***
  * @brief Template specialization of DVector with a single dimension
@@ -218,16 +208,6 @@ namespace mdc {
     class DVector<1, T> : public std::vector<T> {
     public:
         using std::vector<T>::vector;
-
-        /***
-         * @brief Print function for 1-dimentional vectors.
-         *        Format example:
-         * @code
-         * |0.0, 3.0, 4.3|
-         * @endcode
-         */
-        template<typename U>
-        friend std::ostream &operator<<(std::ostream &, const DVector<1, U> &);
 
         /***
          * @brief Get reference of element at given position
@@ -270,18 +250,25 @@ namespace mdc {
         }
     };
 
-};
-
-template<typename T>
-std::ostream &operator<<(std::ostream &os, const mdc::DVector<1, T> &dVector) {
-    auto size = dVector.size();
-    os << '|';
-    for(std::size_t i = 0; i < size; ++i) {
-        os << dVector.at(i);
-        if(i < size-1)
-            os << ", ";
+    /***
+     * @brief Print function for 1-dimentional vectors.
+     *        Format example:
+     * @code
+     * |0.0, 3.0, 4.3|
+     * @endcode
+     */
+    template<typename T>
+    std::ostream &operator<<(std::ostream &os, const mdc::DVector<1, T> &dVector) {
+        auto size = dVector.size();
+        os << '|';
+        for (std::size_t i = 0; i < size; ++i) {
+            os << dVector.at(i);
+            if (i < size - 1)
+                os << ", ";
+        }
+        return os << '|';
     }
-    return os << '|';
+
 }
 
 

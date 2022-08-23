@@ -83,39 +83,6 @@ namespace mdc {
         }
 
     public:
-        /***
-         * @brief Print function for n-dimentional DArrays.
-         *        DArrays with an higher dimension than 2 will print their dimension and current allocation
-         *        for each dimension, while lower dimensions will resemble an handwritten matrix.
-         *        Format example:
-         * @code
-         * DArray<2,3,2>{
-         * |0.5, 0.51|
-         * |1.5, 1.51|
-         * |2.5, 2.51|,
-         *
-         * |3.5, 3.51|
-         * |3.55, 4.51|
-         * |5.5, 5.51|
-         * }
-         * @endcode
-         * @see operator<<(std::ostream &, const DArray<U,M1,M2> &)
-         * @see operator<<(std::ostream &, const DArray<U,M> &)
-         */
-        template<typename U, std::size_t M, std::size_t ...P>
-        friend std::ostream &operator<<(std::ostream &, const DArray<U, M, P...> &)requires (sizeof...(P) > 0);
-
-        /***
-         * @brief Print function for 2-dimentional DArrays.
-         *        Format example:
-         * @code
-         * |42.0, 10.5|
-         * |5.55, 11.2|
-         * |-9.0, 0.01|
-         * @endcode
-         */
-        template<typename U, std::size_t M1, std::size_t M2>
-        friend std::ostream &operator<<(std::ostream &, const DArray<U, M1, M2> &);
 
         DArray() = default;
 
@@ -295,55 +262,67 @@ namespace mdc {
         }
     };
 
-}
-
-template<typename U, std::size_t M, size_t... P>
-std::ostream &operator<<(std::ostream &os, const mdc::DArray<U, M, P...> &dArray)
-requires (sizeof...(P) > 0) {
-    auto size = dArray.size();
-    os << "DArray<" << M;
-    ((os << ',' << P), ...);
-    os << ">{\n";
-    for(std::size_t i = 0; i < size; ++i) {
-        os << dArray.at(i);
-        if(i < size-1)
-            os << ",\n\n";
+    /***
+     * @brief Print function for n-dimentional DArrays.
+     *        DArrays with an higher dimension than 2 will print their dimension and current allocation
+     *        for each dimension, while lower dimensions will resemble an handwritten matrix.
+     *        Format example:
+     * @code
+     * DArray<2,3,2>{
+     * |0.5, 0.51|
+     * |1.5, 1.51|
+     * |2.5, 2.51|,
+     *
+     * |3.5, 3.51|
+     * |3.55, 4.51|
+     * |5.5, 5.51|
+     * }
+     * @endcode
+     * @see operator<<(std::ostream &, const DArray<U,M1,M2> &)
+     * @see operator<<(std::ostream &, const DArray<U,M> &)
+     */
+    template<typename U, std::size_t M, size_t... P>
+    std::ostream &operator<<(std::ostream &os, const mdc::DArray<U, M, P...> &dArray)requires (sizeof...(P) > 0) {
+        auto size = dArray.size();
+        os << "DArray<" << M;
+        ((os << ',' << P), ...);
+        os << ">{\n";
+        for (std::size_t i = 0; i < size; ++i) {
+            os << dArray.at(i);
+            if (i < size - 1)
+                os << ",\n\n";
+        }
+        return os << "\n}";
     }
-    return os << "\n}";
-}
 
-template<typename U, std::size_t M1, std::size_t M2>
-std::ostream &operator<<(std::ostream &os, const mdc::DArray<U, M1, M2> &dArray) {
-    for(std::size_t i = 0; i < M1; ++i) {
-        os << dArray.at(i);
-        if(i < M1-1)
-            os << '\n';
+    /***
+     * @brief Print function for 2-dimentional DArrays.
+     *        Format example:
+     * @code
+     * |42.0, 10.5|
+     * |5.55, 11.2|
+     * |-9.0, 0.01|
+     * @endcode
+     */
+    template<typename U, std::size_t M1, std::size_t M2>
+    std::ostream &operator<<(std::ostream &os, const mdc::DArray<U, M1, M2> &dArray) {
+        for (std::size_t i = 0; i < M1; ++i) {
+            os << dArray.at(i);
+            if (i < M1 - 1)
+                os << '\n';
+        }
+        return os;
     }
-    return os;
-}
 
-
-namespace mdc {
-
-/***
- * @brief Template specialization of DArray with a single dimension
- * @tparam T Type of elements stored
- * @see DArray
- */
+    /***
+     * @brief Template specialization of DArray with a single dimension
+     * @tparam T Type of elements stored
+     * @see DArray
+     */
     template<typename T, std::size_t N>
     class DArray<T, N> : public std::array<T, N> {
     public:
         using std::array<T, N>::array;
-
-        /***
-         * @brief Print function for 1-dimentional DArrays.
-         *        Format example:
-         * @code
-         * |0.0, 3.0, 4.3|
-         * @endcode
-         */
-        template<typename U, std::size_t M>
-        friend std::ostream &operator<<(std::ostream &, const DArray<U, M> &);
 
         DArray() = default;
 
@@ -460,17 +439,24 @@ namespace mdc {
         }
     };
 
-}
-
-template<typename U, std::size_t M>
-std::ostream &operator<<(std::ostream & os, const mdc::DArray<U, M> &dArray) {
-    os << '|';
-    for(std::size_t i = 0; i < M; ++i) {
-        os << dArray.at(i);
-        if(i < M-1)
-            os << ", ";
+    /***
+     * @brief Print function for 1-dimentional DArrays.
+     *        Format example:
+     * @code
+     * |0.0, 3.0, 4.3|
+     * @endcode
+     */
+    template<typename U, std::size_t M>
+    std::ostream &operator<<(std::ostream &os, const mdc::DArray<U, M> &dArray) {
+        os << '|';
+        for (std::size_t i = 0; i < M; ++i) {
+            os << dArray.at(i);
+            if (i < M - 1)
+                os << ", ";
+        }
+        return os << '|';
     }
-    return os << '|';
+
 }
 
 
