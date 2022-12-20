@@ -37,6 +37,7 @@ namespace mdc {
     class DVector : public std::vector<DVector<D - 1, T>> {
     public:
         using std::vector<DVector<D - 1, T>>::vector;
+        using std::vector<DVector<D - 1, T>>::at;
 
         /***
          * @brief Constructor with a single allocation size for all dimensions
@@ -61,17 +62,17 @@ namespace mdc {
          * @return Reference to the requested element
          */
         template<std::integral Idx, std::integral... Indices>
-        T &operator()(Idx index, Indices... indices)requires (sizeof...(Indices) == D - 1) {
-            return this->at(index)(indices...);
+        T &at(Idx index, Indices... indices)requires (sizeof...(Indices) == D - 1) {
+            return this->at(index).at(indices...);
         }
 
         /***
-         * @see DVector<D,T>::operator()(Idx index, Indices... indices)
+         * @see DVector<D,T>::at(Idx index, Indices... indices)
          * @return Constant reference to the requested element
          */
         template<std::integral Idx, std::integral... Indices>
-        const T &operator()(Idx index, Indices... indices) const requires (sizeof...(Indices) == D - 1) {
-            return this->at(index)(indices...);
+        const T &at(Idx index, Indices... indices) const requires (sizeof...(Indices) == D - 1) {
+            return this->at(index).at(indices...);
         }
 
         /***
@@ -85,39 +86,20 @@ namespace mdc {
          */
         template<std::integral Idx, std::integral... Indices>
         DVector<D - sizeof...(Indices) - 1, T> &
-        operator()(Idx index, Indices... indices)requires (sizeof...(Indices) < D - 1) && (sizeof...(Indices) > 0) {
-            return this->at(index)(indices...);
+        at(Idx index, Indices... indices)requires (sizeof...(Indices) < D - 1) && (sizeof...(Indices) > 0) {
+            return this->at(index).at(indices...);
         }
 
         /***
-         * @see DVector<D,T>::operator()(Idx index, Indices... indices)
+         * @see DVector<D,T>::at(Idx index, Indices... indices)
          * @return Constant reference to the requested sub-vector
          */
         template<std::integral Idx, std::integral... Indices>
         const DVector<D - sizeof...(Indices) - 1, T> &
-        operator()(Idx index, Indices... indices) const requires (sizeof...(Indices) < D - 1) &&
+        at(Idx index, Indices... indices) const requires (sizeof...(Indices) < D - 1) &&
                                                                  (sizeof...(Indices) > 0) {
-            return this->at(index)(indices...);
+            return this->at(index).at(indices...);
         }
-
-        /***
-         * @brief Specialization of sub-vector dereference for only one dimension lower
-         * @see DVector<D,T>::operator()(Idx index, Indices... indices)
-         * @param index Index of the sub-vector of lower dimension
-         * @return Reference to a sub-vector of one dimension lower
-         */
-        DVector<D - 1, T> &operator()(std::size_t index) {
-            return this->at(index);
-        }
-
-        /***
-         * @see DVector<D, T>::operator()(std::size_t index)
-         * @return Constant reference to a sub-vector of one dimension lower
-         */
-        const DVector<D - 1, T> &operator()(std::size_t index) const {
-            return this->at(index);
-        }
-
 
         /***
          * @brief View specific intervals of the vector using Span objects for each dimension
@@ -128,14 +110,14 @@ namespace mdc {
          * @see SpanWrapper
          */
         template<typename J, typename... K>
-        DVector<D, T> operator()(J span, K... spans) const
+        DVector<D, T> at(J span, K... spans) const
         requires (sizeof...(K) == D - 1)
                  && std::is_convertible_v<J, mdc::Spanning> && (std::is_convertible_v<K, mdc::Spanning> && ...) {
             std::size_t from = span.isAll ? 0 : span.from,
                     to = span.isAll ? this->size() - 1 : span.to;
             DVector<D, T> dVector(to - from + 1);
             for (std::size_t i = from, j = 0; i <= to; ++i)
-                dVector.at(j++) = std::move(this->at(i)(spans...));
+                dVector.at(j++) = std::move(this->at(i).at(spans...));
             return dVector;
         }
 
@@ -208,23 +190,7 @@ namespace mdc {
     class DVector<1, T> : public std::vector<T> {
     public:
         using std::vector<T>::vector;
-
-        /***
-         * @brief Get reference of element at given position
-         * @param index Position of the element
-         * @return Reference to the requested element
-         */
-        T &operator()(std::size_t index) {
-            return this->at(index);
-        }
-
-        /***
-         * @see DVector<1,T>::operator()(std::size_t index)
-         * @return Constant reference to the requested element
-         */
-        const T &operator()(std::size_t index) const {
-            return this->at(index);
-        }
+        using std::vector<T>::at;
 
         /***
          * @brief View a sub-vector corresponding to a given interval
@@ -233,7 +199,7 @@ namespace mdc {
          * @see Span
          * @see SpanWrapper
          */
-        DVector<1, T> operator()(mdc::Spanning span) const {
+        DVector<1, T> at(mdc::Spanning span) const {
             if (span.isAll)
                 return *this;
             if (span.from >= this->size())

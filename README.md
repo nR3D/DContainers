@@ -19,7 +19,7 @@ For instance, the above example could be written using class `DArray`, where the
 Similarly, `DVector` could be used to represent a general 2-dimensional matrix:
 - `DVector<2, double>`
 
-Some helper methods are then offered to easily fetch stored elements, like `container(1,2)`, which corresponds to `container.at(1).at(2)`, or views using `Span` class.
+Some helper methods are then offered to easily fetch stored elements, like `container.at(1,2)`, which corresponds to `container.at(1).at(2)`, or views using `Span` class.
 
 ## Code examples
 
@@ -44,20 +44,20 @@ DArray<double, 2, 3> matrix = {
 };
 
 // Accessing elements
-d3Vector(1,1,2) = 0;
-matrix(0,2) = 2.1;
+d3Vector.at(1,1,2) = 0;
+matrix.at(0,2) = 2.1;
 
 // Accessing sub-containers (not necessarily by reference)
-DVector<2, short>& subD3Vector = d3Vector(0);
-DArray<double, 3>& subMatrix = matrix(1);
+DVector<2, short>& subD3Vector = d3Vector.at(0);
+DArray<double, 3>& subMatrix = matrix.at(1);
 
 // Assigning through sub-containers
-subD3Vector(1) = {24, 25, 26};
-subMatrix(2) = -3.33;
+subD3Vector.at(1) = {24, 25, 26};
+subMatrix.at(2) = -3.33;
 
 // Define views on containers
-DVector<3, short> view3DVector = d3Vector(Span::of(1), Span::all(), Span::of(0,1));
-DArray<double, 2, 1> viewMatrix = matrix(Span::all(), Span::of<0>());
+DVector<3, short> view3DVector = d3Vector.at(Span::of(1), Span::all(), Span::of(0,1));
+DArray<double, 2, 1> viewMatrix = matrix.at(Span::all(), Span::of<0>());
 ```
 
 ### Printing
