@@ -119,7 +119,7 @@ doxygen docs/Doxyfile
 
 > **Note**: given the abundant use of templates and variadics, having a `clang` installation is recommended.
 
-Documentation will be accessible in `build/docs/html/index.html`.
+Documentation will be accessible in `docs/html/index.html`.
 
 ## Usage
 
