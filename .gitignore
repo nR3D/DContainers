@@ -1,6 +1,4 @@
-.idea/
-CMakeCache.txt
-cmake-build-debug/
-Makefile
 build*
 install
+docs/html
+docs/latex
