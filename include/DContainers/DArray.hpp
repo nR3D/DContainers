@@ -33,21 +33,6 @@ namespace mdc {
     template<typename T, std::size_t N, std::size_t ...O>
     class DArray : public std::array<DArray<T, O...>, N> {
     private:
-        template<std::size_t ...Idx>
-        constexpr static std::size_t get_idx(std::size_t num, std::size_t max) {
-            auto displacement = sizeof...(Idx) - max - 1;
-            return std::array<std::size_t, sizeof...(Idx)>{Idx...}.at(displacement + num);
-        }
-
-        template<typename Seq, std::size_t ...Idx>
-        struct DArray_reducer {
-        };
-
-        template<std::size_t ...Seq, std::size_t ...Idx> requires (sizeof...(Seq) > 0)
-        struct DArray_reducer<std::index_sequence<Seq...>, Idx...> {
-            using type = DArray<T, get_idx<Idx...>(Seq, sizeof...(Seq) - 1)...>;
-        };
-
         template<typename U, std::size_t ...I>
         constexpr std::array<U, N> array_initializer_extractor(const U *const data, std::index_sequence<I...>) {
             return {data[I]...};
@@ -61,14 +46,6 @@ namespace mdc {
     protected:
         // Total number of dimensions of DArray
         static constexpr std::size_t D = sizeof...(O) + 1;
-
-        /***
-         * @brief Type expressing a lower dimensional DArray.
-         * @tparam max Dimension of the resulting DArray
-         * @tparam Idx Parameter pack of sizes to be reduced to max
-         * @return DArray where only the last "max" sizes have been left
-         */
-        template<std::size_t max, std::size_t ...Idx> using DArray_reduced_t = typename DArray_reducer<std::make_index_sequence<max>, Idx...>::type;
 
         /***
          * @brief Utility to initialize a DArray through an initializer_list, maintaining the same order.
@@ -114,7 +91,7 @@ namespace mdc {
          * @return Reference to the requested element
          */
         template<std::integral Idx, std::integral... Indices>
-        T & at(Idx index, Indices... indices)requires (sizeof...(Indices) == D - 1) {
+        constexpr T& at(Idx index, Indices... indices)requires (sizeof...(Indices) == D - 1) {
             return this->at(index).at(indices...);
         }
 
@@ -123,7 +100,7 @@ namespace mdc {
          * @return Constant reference to the requested element
          */
         template<std::integral Idx, std::integral... Indices>
-        const T & at(Idx index, Indices... indices) const requires (sizeof...(Indices) == D - 1) {
+        constexpr const T& at(Idx index, Indices... indices) const requires (sizeof...(Indices) == D - 1) {
             return this->at(index).at(indices...);
         }
 
@@ -132,26 +109,13 @@ namespace mdc {
          * @param index Index of the higher (i.e. left-most) dimension
          * @param indices Parameter pack of the indices for the lower dimensions of the sub-array
          * @return Reference to the requested sub-array
-         * @see DArray<T,N,O...>::DArray_reduced_t
          * @warning Getting a reference to a sub-array, and then assigning a new sub-array to the parent DArray,
          *          will result in a dangling reference, since the previous sub-array (to which the reference points to)
          *          will be deleted before assigning the new one
          */
         template<std::integral Idx, std::integral... Indices>
-        DArray_reduced_t<D - sizeof...(Indices) - 1, N, O...> &
+        constexpr decltype(auto)
         at(Idx index, Indices... indices)requires (sizeof...(Indices) < D - 1) && (sizeof...(Indices) > 0) {
-            return this->at(index).at(indices...);
-        }
-
-        /***
-         * @see DArray<T,N,O...>::at(Idx index, Indices... indices)
-         * @see DArray<T,N,O...>::DArray_reduced_t
-         * @return Constant reference to the requested sub-array
-         */
-        template<std::integral Idx, std::integral... Indices>
-        const DArray_reduced_t<D - sizeof...(Indices) - 1, N, O...> &
-        at(Idx index, Indices... indices) const requires (sizeof...(Indices) < D - 1) &&
-                                                                 (sizeof...(Indices) > 0) {
             return this->at(index).at(indices...);
         }
 
