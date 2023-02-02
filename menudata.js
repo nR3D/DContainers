@@ -48,7 +48,6 @@ var menudata={children:[
 {text:"o",url:"functions_func.html#index_o"},
 {text:"s",url:"functions_func.html#index_s"},
 {text:"t",url:"functions_func.html#index_t"}]},
-{text:"Variables",url:"functions_vars.html"},
-{text:"Typedefs",url:"functions_type.html"}]}]},
+{text:"Variables",url:"functions_vars.html"}]}]},
 {text:"Files",url:"files.html",children:[
 {text:"File List",url:"files.html"}]}]}
