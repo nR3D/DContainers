@@ -69,6 +69,17 @@ protected:
                     std::make_unique<int>(-4)
                 }
         };
+
+        sp2Array = {
+                {
+                        std::make_shared<int>(2),
+                        std::make_shared<int>(-1)
+                },
+                {
+                        std::make_shared<int>(5),
+                        std::make_shared<int>(-4)
+                }
+        };
     }
 
     DArray<double, 2, 3> d2Array;
@@ -77,6 +88,7 @@ protected:
     DArray<float, 5> f1Array;
     DArray<complex_type , 2, 2> complexTypeArray;
     DArray<std::unique_ptr<int>, 2, 2> up2Array;
+    DArray<std::shared_ptr<int>, 2, 2> sp2Array;
 };
 
 TEST_F(DArrayTest, VectorTotal) {
@@ -86,6 +98,7 @@ TEST_F(DArrayTest, VectorTotal) {
     EXPECT_EQ(f1Array.total(), 5);
     EXPECT_EQ(complexTypeArray.total(), 4);
     EXPECT_EQ(up2Array.total(), 4);
+    EXPECT_EQ(sp2Array.total(), 4);
 }
 
 TEST_F(DArrayTest, ElementsFetch) {
@@ -115,6 +128,11 @@ TEST_F(DArrayTest, ElementsFetch) {
     EXPECT_EQ(*up2Array.at(0,1), -1);
     EXPECT_EQ(*up2Array.at(1,0), 5);
     EXPECT_EQ(*up2Array.at(1,1), -4);
+
+    EXPECT_EQ(*sp2Array.at(0,0), 2);
+    EXPECT_EQ(*sp2Array.at(0,1), -1);
+    EXPECT_EQ(*sp2Array.at(1,0), 5);
+    EXPECT_EQ(*sp2Array.at(1,1), -4);
 }
 
 TEST_F(DArrayTest, ElementsAssignment) {
@@ -138,6 +156,11 @@ TEST_F(DArrayTest, ElementsAssignment) {
     EXPECT_EQ(*up2Array.at(0,1), 6);
     *up2Array.at(0,1) = 3;  // check assignment of pointed element
     EXPECT_EQ(*up2Array.at(0,1), 3);
+
+    sp2Array.at(0,1) = std::make_shared<int>(6);  // check assignment of pointer
+    EXPECT_EQ(*sp2Array.at(0,1), 6);
+    *sp2Array.at(0,1) = 3;  // check assignment of pointed element
+    EXPECT_EQ(*sp2Array.at(0,1), 3);
 }
 
 TEST_F(DArrayTest, SubvectorFetch) {
@@ -161,6 +184,10 @@ TEST_F(DArrayTest, SubvectorFetch) {
     DArray<std::unique_ptr<int>, 2> newUp2Array = std::move(up2Array.at(1));
     EXPECT_EQ(*newUp2Array.at(0), 5);
     EXPECT_EQ(*newUp2Array.at(1), -4);
+
+    DArray<std::shared_ptr<int>, 2> newSp2Array = sp2Array.at(1);
+    EXPECT_EQ(*newSp2Array.at(0), 5);
+    EXPECT_EQ(*newSp2Array.at(1), -4);
 }
 
 TEST_F(DArrayTest, MoveAssignment) {
@@ -214,6 +241,15 @@ TEST_F(DArrayTest, SubvectorRefAssignment) {
     };
     EXPECT_EQ(*up2Array.at(1,0), -5);
     EXPECT_EQ(*up2Array.at(1,1), 4);
+
+    DArray<std::shared_ptr<int>, 2>& subSp2Array = sp2Array.at(1);
+    EXPECT_EQ(*subSp2Array.at(0), 5);
+    subSp2Array = {
+            std::make_shared<int>(-5),
+            std::make_shared<int>(4)
+    };
+    EXPECT_EQ(*sp2Array.at(1,0), -5);
+    EXPECT_EQ(*sp2Array.at(1,1), 4);
 }
 
 TEST_F(DArrayTest, SpanViewMethods) {
@@ -241,6 +277,12 @@ TEST_F(DArrayTest, SpanViewMethods) {
     DArray<std::string, 1, 1> expectedViewS2Array = {{"1,1"}};
     EXPECT_EQ(spanS2Array, expectedViewS2Array);
     EXPECT_EQ(spanS2Array, spanS2ArrayWrap);
+
+    DArray<std::shared_ptr<int>, 1, 1> spanSp2Array = sp2Array.at(DSpanning<SpanSize::Index<1>>(), DSpanning<SpanSize::Index<1>>());
+    DArray<std::shared_ptr<int>, 1, 1> spanSp2ArrayWrap = sp2Array.at(Span::of<1>(), Span::of<1>());
+    EXPECT_EQ(spanSp2Array, spanSp2ArrayWrap);
+    EXPECT_EQ(*spanSp2Array.at(0,0), -4);
+    EXPECT_EQ(spanSp2Array.total(), 1);
 }
 
 TEST_F(DArrayTest, AllSpanView) {
@@ -252,6 +294,9 @@ TEST_F(DArrayTest, AllSpanView) {
 
     auto spanS2Array = s2Array.at(DSpanning<SpanSize::All>(), DSpanning<SpanSize::All>());
     EXPECT_EQ(spanS2Array, s2Array);
+
+    auto spanSp2Array = sp2Array.at(DSpanning<SpanSize::All>(), DSpanning<SpanSize::All>());
+    EXPECT_EQ(spanSp2Array, sp2Array);
 }
 
 
@@ -277,6 +322,7 @@ TEST_F(DArrayTest, ArrayPrinting) {
     std::cout << d2Array << std::endl;
     std::cout << i3Array << std::endl;
     std::cout << up2Array << std::endl;
+    std::cout << sp2Array << std::endl;
 
     // restore console output
     std::cout.rdbuf(console);
