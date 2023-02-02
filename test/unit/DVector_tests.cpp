@@ -63,6 +63,17 @@ protected:
         up2Vector.at(0).emplace_back(std::make_unique<int>(-1));
         up2Vector.at(1).emplace_back(std::make_unique<int>(5));
         up2Vector.at(1).emplace_back(std::make_unique<int>(-4));
+
+        sp2Vector = {
+                {
+                        std::make_shared<int>(2),
+                        std::make_shared<int>(-1)
+                },
+                {
+                        std::make_shared<int>(5),
+                        std::make_shared<int>(-4)
+                }
+        };
     }
 
     DVector<2, double> d2Vector{2,3};
@@ -71,6 +82,7 @@ protected:
     DVector<1, float> f1Vector;
     DVector<2, std::pair<std::string, std::complex<double>>> complexTypeVector;
     DVector<2, std::unique_ptr<int>> up2Vector;
+    DVector<2, std::shared_ptr<int>> sp2Vector;
 };
 
 TEST_F(DVectorTest, VectorTotal) {
@@ -79,6 +91,8 @@ TEST_F(DVectorTest, VectorTotal) {
     EXPECT_EQ(i3Vector.total(), 14);
     EXPECT_EQ(f1Vector.total(), 5);
     EXPECT_EQ(complexTypeVector.total(), 4);
+    EXPECT_EQ(up2Vector.total(), 4);
+    EXPECT_EQ(sp2Vector.total(), 4);
 }
 
 TEST_F(DVectorTest, ElementsFetch) {
@@ -103,6 +117,16 @@ TEST_F(DVectorTest, ElementsFetch) {
     EXPECT_EQ(complexTypeVector.at(0,0).second, std::complex<double>(0,0));
     EXPECT_EQ(complexTypeVector.at(1,1).first, "1,1");
     EXPECT_EQ(complexTypeVector.at(1,1).second, std::complex<double>(1,1));
+
+    EXPECT_EQ(*up2Vector.at(0,0), 2);
+    EXPECT_EQ(*up2Vector.at(0,1), -1);
+    EXPECT_EQ(*up2Vector.at(1,0), 5);
+    EXPECT_EQ(*up2Vector.at(1,1), -4);
+
+    EXPECT_EQ(*sp2Vector.at(0,0), 2);
+    EXPECT_EQ(*sp2Vector.at(0,1), -1);
+    EXPECT_EQ(*sp2Vector.at(1,0), 5);
+    EXPECT_EQ(*sp2Vector.at(1,1), -4);
 }
 
 TEST_F(DVectorTest, ElementsAssignment) {
@@ -121,6 +145,16 @@ TEST_F(DVectorTest, ElementsAssignment) {
     complexTypeVector.at(0,1) = {"key string", {12,4}};
     EXPECT_EQ(complexTypeVector.at(0,1).first, "key string");
     EXPECT_EQ(complexTypeVector.at(0,1).second, std::complex<double>(12, 4));
+
+    up2Vector.at(0,1) = std::make_unique<int>(6);  // check assignment of pointer
+    EXPECT_EQ(*up2Vector.at(0,1), 6);
+    *up2Vector.at(0,1) = 3;  // check assignment of pointed element
+    EXPECT_EQ(*up2Vector.at(0,1), 3);
+
+    sp2Vector.at(0,1) = std::make_shared<int>(6);  // check assignment of pointer
+    EXPECT_EQ(*sp2Vector.at(0,1), 6);
+    *sp2Vector.at(0,1) = 3;  // check assignment of pointed element
+    EXPECT_EQ(*sp2Vector.at(0,1), 3);
 }
 
 TEST_F(DVectorTest, SubvectorFetch) {
@@ -139,6 +173,27 @@ TEST_F(DVectorTest, SubvectorFetch) {
     DVector<1, std::pair<std::string, std::complex<double>>> subComplexTypeVector = complexTypeVector.at(0);
     EXPECT_EQ(subComplexTypeVector.at(1).first, "0,1");
     EXPECT_EQ(subComplexTypeVector.at(1).second, std::complex<double>(0,1));
+
+    // test move copy for unique_ptr since no copy-constructor of unique_ptr is available
+    DVector<1, std::unique_ptr<int>> newUp2Vector = std::move(up2Vector.at(1));
+    EXPECT_EQ(*newUp2Vector.at(0), 5);
+    EXPECT_EQ(*newUp2Vector.at(1), -4);
+
+    DVector<1, std::shared_ptr<int>> newSp2Vector = sp2Vector.at(1);
+    EXPECT_EQ(*newSp2Vector.at(0), 5);
+    EXPECT_EQ(*newSp2Vector.at(1), -4);
+}
+
+TEST_F(DVectorTest, MoveAssignment) {
+    // test move entire DArray
+    DVector<2, std::unique_ptr<int>> newUp2Vector = std::move(up2Vector);
+    EXPECT_EQ(*newUp2Vector.at(1,0), 5);
+    EXPECT_EQ(*newUp2Vector.at(1,1), -4);
+
+    // test move subarray
+    DVector<1, std::unique_ptr<int>> subUp2Vector = std::move(newUp2Vector.at(1));
+    EXPECT_EQ(*subUp2Vector.at(0), 5);
+    EXPECT_EQ(*subUp2Vector.at(1), -4);
 }
 
 TEST_F(DVectorTest, SubvectorRefAssignment) {
@@ -171,6 +226,22 @@ TEST_F(DVectorTest, SubvectorRefAssignment) {
     EXPECT_EQ(subComplexTypeVector.at(1).second, std::complex<double>(-2,-2));
     EXPECT_EQ(complexTypeVector.at(0,1).first, "second key");
     EXPECT_EQ(complexTypeVector.at(0,1).second, std::complex<double>(-2,-2));
+
+    DVector<1, std::unique_ptr<int>>& subUp2Vector = up2Vector.at(1);
+    EXPECT_EQ(*subUp2Vector.at(0), 5);
+    *subUp2Vector.at(0) = -5;
+    *subUp2Vector.at(1) = 4;
+    EXPECT_EQ(*up2Vector.at(1,0), -5);
+    EXPECT_EQ(*up2Vector.at(1,1), 4);
+
+    DVector<1, std::shared_ptr<int>>& subSp2Vector = sp2Vector.at(1);
+    EXPECT_EQ(*subSp2Vector.at(0), 5);
+    subSp2Vector = {
+            std::make_unique<int>(-5),
+            std::make_unique<int>(4)
+    };
+    EXPECT_EQ(*sp2Vector.at(1,0), -5);
+    EXPECT_EQ(*sp2Vector.at(1,1), 4);
 }
 
 TEST_F(DVectorTest, SpanViewMethods) {
@@ -192,6 +263,10 @@ TEST_F(DVectorTest, SpanViewMethods) {
     DVector<2, std::string> spanS2Vector = s2Vector.at(Spanning(1), Spanning(1));
     DVector<2, std::string> expectedViewS2Vector = {{"1,1"}};
     EXPECT_EQ(spanS2Vector, expectedViewS2Vector);
+
+    DVector<2, std::shared_ptr<int>> spanSp2Vector = sp2Vector.at(Spanning(1), Spanning(1));
+    EXPECT_EQ(*spanSp2Vector.at(0,0), -4);
+    EXPECT_EQ(spanSp2Vector.total(), 1);
 }
 
 TEST_F(DVectorTest, AllSpanView) {
@@ -203,6 +278,9 @@ TEST_F(DVectorTest, AllSpanView) {
 
     DVector<2, std::string> spanS2Vector = s2Vector.at(Spanning::all(), Spanning::all());
     EXPECT_EQ(spanS2Vector, s2Vector);
+
+    DVector<2, std::shared_ptr<int>> spanSp2Vector = sp2Vector.at(Spanning::all(), Spanning::all());
+    EXPECT_EQ(spanSp2Vector, sp2Vector);
 }
 
 TEST_F(DVectorTest, SpanWrapperView) {
@@ -230,6 +308,12 @@ TEST_F(DVectorTest, SpanWrapperView) {
     DVector<2, std::string> expectedViewS2Vector = {{"1,1"}};
     EXPECT_EQ(spanS2VectorRT, expectedViewS2Vector);
     EXPECT_EQ(spanS2VectorRT, spanS2VectorCT);
+
+    DVector<2, std::shared_ptr<int>> spanSp2Array = sp2Vector.at(Span::of(1), Span::of(1));
+    DVector<2, std::shared_ptr<int>> spanSp2ArrayWrap  = sp2Vector.at(Span::of<1>(), Span::of<1>());
+    EXPECT_EQ(spanSp2Array, spanSp2ArrayWrap);
+    EXPECT_EQ(*spanSp2Array.at(0,0), -4);
+    EXPECT_EQ(spanSp2Array.total(), 1);
 }
 
 TEST_F(DVectorTest, VectorPrinting) {
@@ -239,6 +323,8 @@ TEST_F(DVectorTest, VectorPrinting) {
     std::cout << f1Vector << std::endl;
     std::cout << d2Vector << std::endl;
     std::cout << i3Vector << std::endl;
+    std::cout << up2Vector << std::endl;
+    std::cout << sp2Vector << std::endl;
 
     // restore console output
     std::cout.rdbuf(console);
