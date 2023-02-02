@@ -58,6 +58,17 @@ protected:
                 { complex_type{"0,0", {0,0}}, complex_type{"0,1", {0,1}} },
                 { complex_type{"1,0", {1,0}}, complex_type{"1,1", {1,1}} }
         };
+
+        up2Array = {
+                {
+                    std::make_unique<int>(2),
+                    std::make_unique<int>(-1)
+                },
+                {
+                    std::make_unique<int>(5),
+                    std::make_unique<int>(-4)
+                }
+        };
     }
 
     DArray<double, 2, 3> d2Array;
@@ -65,6 +76,7 @@ protected:
     DArray<int, 2, 2, 3> i3Array;
     DArray<float, 5> f1Array;
     DArray<complex_type , 2, 2> complexTypeArray;
+    DArray<std::unique_ptr<int>, 2, 2> up2Array;
 };
 
 TEST_F(DArrayTest, VectorTotal) {
@@ -73,6 +85,7 @@ TEST_F(DArrayTest, VectorTotal) {
     EXPECT_EQ(i3Array.total(), 12);
     EXPECT_EQ(f1Array.total(), 5);
     EXPECT_EQ(complexTypeArray.total(), 4);
+    EXPECT_EQ(up2Array.total(), 4);
 }
 
 TEST_F(DArrayTest, ElementsFetch) {
@@ -97,6 +110,11 @@ TEST_F(DArrayTest, ElementsFetch) {
     EXPECT_EQ(complexTypeArray.at(0,0).second, std::complex<double>(0,0));
     EXPECT_EQ(complexTypeArray.at(1,1).first, "1,1");
     EXPECT_EQ(complexTypeArray.at(1,1).second, std::complex<double>(1,1));
+
+    EXPECT_EQ(*up2Array.at(0,0), 2);
+    EXPECT_EQ(*up2Array.at(0,1), -1);
+    EXPECT_EQ(*up2Array.at(1,0), 5);
+    EXPECT_EQ(*up2Array.at(1,1), -4);
 }
 
 TEST_F(DArrayTest, ElementsAssignment) {
@@ -115,6 +133,11 @@ TEST_F(DArrayTest, ElementsAssignment) {
     complexTypeArray.at(0,1) = {"key string", {12,4}};
     EXPECT_EQ(complexTypeArray.at(0,1).first, "key string");
     EXPECT_EQ(complexTypeArray.at(0,1).second, std::complex<double>(12, 4));
+
+    up2Array.at(0,1) = std::make_unique<int>(6);  // check assignment of pointer
+    EXPECT_EQ(*up2Array.at(0,1), 6);
+    *up2Array.at(0,1) = 3;  // check assignment of pointed element
+    EXPECT_EQ(*up2Array.at(0,1), 3);
 }
 
 TEST_F(DArrayTest, SubvectorFetch) {
@@ -133,6 +156,23 @@ TEST_F(DArrayTest, SubvectorFetch) {
     DArray<complex_type, 2> subComplexTypeArray = complexTypeArray.at(0);
     EXPECT_EQ(subComplexTypeArray.at(1).first, "0,1");
     EXPECT_EQ(subComplexTypeArray.at(1).second, std::complex<double>(0,1));
+
+    // test move copy for unique_ptr since no copy-constructor of unique_ptr is available
+    DArray<std::unique_ptr<int>, 2> newUp2Array = std::move(up2Array.at(1));
+    EXPECT_EQ(*newUp2Array.at(0), 5);
+    EXPECT_EQ(*newUp2Array.at(1), -4);
+}
+
+TEST_F(DArrayTest, MoveAssignment) {
+    // test move entire DArray
+    DArray<std::unique_ptr<int>, 2, 2> newUp2Array = std::move(up2Array);
+    EXPECT_EQ(*newUp2Array.at(1,0), 5);
+    EXPECT_EQ(*newUp2Array.at(1,1), -4);
+
+    // test move subarray
+    DArray<std::unique_ptr<int>, 2> subUp2Array = std::move(newUp2Array.at(1));
+    EXPECT_EQ(*subUp2Array.at(0), 5);
+    EXPECT_EQ(*subUp2Array.at(1), -4);
 }
 
 TEST_F(DArrayTest, SubvectorRefAssignment) {
@@ -165,6 +205,15 @@ TEST_F(DArrayTest, SubvectorRefAssignment) {
     EXPECT_EQ(subComplexTypeArray.at(1).second, std::complex<double>(-2, -2));
     EXPECT_EQ(complexTypeArray.at(0,1).first, "second key");
     EXPECT_EQ(complexTypeArray.at(0,1).second, std::complex<double>(-2,-2));
+
+    DArray<std::unique_ptr<int>, 2>& subUp2Array = up2Array.at(1);
+    EXPECT_EQ(*subUp2Array.at(0), 5);
+    subUp2Array = {
+            std::make_unique<int>(-5),
+            std::make_unique<int>(4)
+    };
+    EXPECT_EQ(*up2Array.at(1,0), -5);
+    EXPECT_EQ(*up2Array.at(1,1), 4);
 }
 
 TEST_F(DArrayTest, SpanViewMethods) {
@@ -227,6 +276,7 @@ TEST_F(DArrayTest, ArrayPrinting) {
     std::cout << f1Array << std::endl;
     std::cout << d2Array << std::endl;
     std::cout << i3Array << std::endl;
+    std::cout << up2Array << std::endl;
 
     // restore console output
     std::cout.rdbuf(console);

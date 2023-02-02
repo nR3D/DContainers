@@ -34,8 +34,8 @@ namespace mdc {
     class DArray : public std::array<DArray<T, O...>, N> {
     private:
         template<typename U, std::size_t ...I>
-        constexpr std::array<U, N> array_initializer_extractor(const U *const data, std::index_sequence<I...>) {
-            return {data[I]...};
+        constexpr std::array<U, N> array_initializer_extractor(const U* data, std::index_sequence<I...>) {
+            return {std::forward<U>(const_cast<U*>(data)[I])...};
         }
 
         template<std::size_t M, std::size_t ...P>
@@ -54,7 +54,7 @@ namespace mdc {
          * @return Array containing all elements of list
          */
         template<typename U>
-        constexpr std::array<U, N> array_initializer(std::initializer_list<U> list) {
+        constexpr std::array<U, N> array_initializer(std::initializer_list<U>&& list) {
             return array_initializer_extractor(std::data(list), std::make_index_sequence<N>());
         }
 
@@ -68,8 +68,8 @@ namespace mdc {
          * @brief Constructor of DArray with a nested initializer_list of DArrays of lower dimensions
          * @param values initializer_list of sub-arrays
          */
-        DArray(std::initializer_list<DArray<T, O...>> values) : std::array<DArray<T, O...>, N>(
-                array_initializer(values)) {}
+        DArray(std::initializer_list<DArray<T, O...>>&& values) : std::array<DArray<T, O...>, N>(
+                array_initializer(std::forward<std::initializer_list<DArray<T, O...>>>(values))) {}
 
 
         /***
@@ -268,6 +268,9 @@ namespace mdc {
          */
         template<typename ...U>
         DArray(const U &...values) requires (std::is_convertible_v<U, T> &&...) : std::array<T, N>({values...}) {}
+
+        template<typename ...U>
+        DArray(U&&...values) requires (std::is_convertible_v<U, T> &&...) : std::array<T, N>({std::forward<U>(values)...}) {}
 
         /***
          * @brief Construct DArray as copy of a std::array

@@ -56,6 +56,13 @@ protected:
                 { {"0,0", {0,0}}, {"0,1", {0,1}} },
                 { {"1,0", {1,0}}, {"1,1", {1,1}} }
         };
+
+        // initializer_list not supported for move-only types such as unique_ptr
+        up2Vector.resize(2);
+        up2Vector.at(0).emplace_back(std::make_unique<int>(2));
+        up2Vector.at(0).emplace_back(std::make_unique<int>(-1));
+        up2Vector.at(1).emplace_back(std::make_unique<int>(5));
+        up2Vector.at(1).emplace_back(std::make_unique<int>(-4));
     }
 
     DVector<2, double> d2Vector{2,3};
@@ -63,6 +70,7 @@ protected:
     DVector<3, int> i3Vector;
     DVector<1, float> f1Vector;
     DVector<2, std::pair<std::string, std::complex<double>>> complexTypeVector;
+    DVector<2, std::unique_ptr<int>> up2Vector;
 };
 
 TEST_F(DVectorTest, VectorTotal) {
